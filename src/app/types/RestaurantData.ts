@@ -1,0 +1,21 @@
+export type RestaurantData = {
+    inputString: string;
+    id: string;
+    googleLink: string;
+    name: string;
+    category: string;
+    address: string;
+    website: string;
+    phone: string;
+    rating: number;
+    count_per_rating: string[];
+    ratingCount: string;
+    openingHours: string[];
+    latitude: number | null;
+    longitude: number | null;
+    images: string[];
+    reviews: string[];
+    tags: string[];
+    chainRestaurantId: string | null;
+    success: boolean;
+};
