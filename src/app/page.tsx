@@ -6,7 +6,8 @@ import { RestaurantData } from './types/RestaurantData';
 import LazyImage from './components/LazyImage';
 import Star from './components/Star';
 import ProgressBar from './components/ProgressBar/ProgressBar';
-import Select, { ActionMeta, CSSObjectWithLabel, MultiValue } from 'react-select';
+import Select, { ActionMeta, CSSObjectWithLabel, MultiValue, SingleValue } from 'react-select';
+import { COUNTRY_SELECT_STYLES, TAGS_SELECT_STYLES } from './types/contants';
 
 // TODO:
 // Add countries
@@ -16,8 +17,15 @@ type CountPerRating = {
     numberOfReviews: number;
     grade: number;
 };
-
+const countryOptions = [
+    { value: 'jp', label: 'Japan' },
+    // { value: 'tw', label: 'Taiwan' },
+    // { value: 'hk', label: 'Hong Kong' },
+    // Add more countries as needed
+];
 export default function Home() {
+    const [selectedCountry, setSelectedCountry] = useState(countryOptions[0]);
+
     const [data, setData] = useState<RestaurantData[]>([]);
     const [ogData, setOgData] = useState<RestaurantData[]>([]);
 
@@ -26,6 +34,16 @@ export default function Home() {
     const [searchTerm, setSearchTerm] = useState('');
 
     const staticRatingTags = ['0-1 star', '1-2 stars', '2-3 stars', '3-4 stars', '4 stars+'];
+
+    const handleCountryChange = (selectedOption: SingleValue<{ value: string; label: string }>) => {
+        if (!selectedOption) {
+            return;
+        }
+        setSelectedCountry({
+            value: selectedOption.value,
+            label: selectedOption.label,
+        });
+    };
 
     const handleSelectChange = (
         selectedOptions: MultiValue<{ value: string; label: string }>,
@@ -198,93 +216,19 @@ export default function Home() {
         );
     };
 
-    const customStyles = {
-        container: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            backgroundColor: '#333', // Dark background for the container
-            borderRadius: '4px',
-            margin: '0 12px 24px 12px',
-        }),
-        control: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            backgroundColor: '#444', // Dark background for the control
-            borderColor: '#666', // Dark border color
-            boxShadow: 'none',
-            '&:hover': {
-                borderColor: '#888', // Slightly lighter border color on hover
-            },
-        }),
-        menu: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            backgroundColor: '#333', // Dark background for the dropdown menu
-            color: '#fff', // White text color
-        }),
-        menuList: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            padding: 0,
-        }),
-        option: (provided: CSSObjectWithLabel, state: any) => ({
-            ...provided,
-            backgroundColor: state.isSelected ? '#555' : '#333', // Dark background for options, lighter on select
-            color: '#fff', // White text color
-            '&:hover': {
-                backgroundColor: '#555', // Slightly lighter background on hover
-            },
-        }),
-        placeholder: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            color: '#aaa', // Placeholder text color
-        }),
-        singleValue: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            color: '#fff', // Text color for selected item
-        }),
-        input: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            color: '#fff', // Input text color
-        }),
-        indicatorSeparator: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            backgroundColor: '#666', // Separator color
-        }),
-        clearIndicator: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            backgroundColor: 'red', // Blue background for clear button
-            color: '#fff', // White text color
-            padding: '0 8px', // Padding inside the button
-            borderRadius: '2px', // Rounded corners for the button
-            '&:hover': {
-                backgroundColor: '#0056b3', // Darker blue on hover
-            },
-        }),
-        dropdownIndicator: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            color: '#fff', // Color for the dropdown indicator
-        }),
-        multiValue: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            backgroundColor: '#007bff', // Background color of multi-value tags
-            borderRadius: '4px', // Rounded corners for multi-value tags
-            padding: '2px 6px', // Padding inside the tag
-        }),
-        multiValueLabel: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            color: '#fff', // Text color inside the multi-value tags
-        }),
-        multiValueRemove: (provided: CSSObjectWithLabel) => ({
-            ...provided,
-            color: '#fff', // Color for the remove icon
-            backgroundColor: 'red', // Blue background for the remove button
-            borderRadius: '50%', // Rounded shape for the remove button
-            ':hover': {
-                backgroundColor: '#0056b3', // Darker blue on hover for remove button
-            },
-        }),
-    };
-
     return (
         <main>
             <div className="container">
+                <div style={{ width: '50%' }}>
+                    <Select
+                        options={countryOptions}
+                        styles={COUNTRY_SELECT_STYLES}
+                        value={selectedCountry}
+                        onChange={handleCountryChange}
+                        id="country-select"
+                        placeholder="Select country"
+                    />
+                </div>
                 {data ? (
                     <div>
                         <div className="search-container">
@@ -299,11 +243,12 @@ export default function Home() {
                         <Select
                             isMulti
                             options={allFilters}
-                            styles={customStyles}
+                            styles={TAGS_SELECT_STYLES}
                             id="tags-select"
                             onChange={handleSelectChange}
                             placeholder="Filter by tags..."
                         />
+                        <div style={{ margin: '0 16px' }}>{data.length} results</div>
                         {data.map((result, index) => (
                             <div className="card" key={index} id={result.id}>
                                 <h1>{result.name}</h1>
