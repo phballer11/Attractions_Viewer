@@ -1,3 +1,3 @@
-const prefix = process.env.NODE_ENV === 'development' ? '' : '';
+const prefix = process.env.NODE_ENV === 'production' ? 'Attractions_Viewer' : '';
 
 export { prefix };

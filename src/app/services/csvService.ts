@@ -7,7 +7,13 @@ export const parseCSV = async (): Promise<RestaurantData[]> => {
 
     // const response = await fetch(`${prefix}/data/japan_restaurants.csv`);
     // const csvString = await response.text();
-    const csvString = await getCsvResposne();
+    let csvString = '';
+    try {
+        csvString = await getCsvResposne();
+    } catch (e) {
+        console.error('Error fetching CSV', e);
+        return [];
+    }
 
     Papa.parse(csvString, {
         header: true,
@@ -64,22 +70,23 @@ export const parseCSV = async (): Promise<RestaurantData[]> => {
 };
 
 const getCsvResposne = async () => {
-    try {
-        console.log('prefi in csv:', prefix);
-        const response = await fetch(`${prefix}/data/japan_restaurants.csv`);
-        const csvString = await response.text();
-        return csvString;
-    } catch (e) {
-        console.error('Error fetching CSV for path:`${prefix}/data/japan_restaurants.csv`', e);
-    }
+    // try {
+    //     console.log('prefix in csv:', prefix);
+    //     const response = await fetch(`${prefix}/data/japan_restaurants.csv`);
+    //     const csvString = await response.text();
+    //     return csvString;
+    // } catch (e) {
+    //     console.error('Error fetching CSV for path:`${prefix}/data/japan_restaurants.csv`', e);
+    // }
 
-    try {
-        const response = await fetch(`/data/japan_restaurants.csv`);
-        const csvString = await response.text();
-        return csvString;
-    } catch (e) {
-        console.error('Error fetching CSV for path:`/data/japan_restaurants.csv`', e);
-    }
+    // try {
+    //     console.log('second path');
+    //     const response = await fetch(`/data/japan_restaurants.csv`);
+    //     const csvString = await response.text();
+    //     return csvString;
+    // } catch (e) {
+    //     console.error('Error fetching CSV for path:`/data/japan_restaurants.csv`', e);
+    // }
 
     try {
         const response = await fetch(`Attractions_Viewer/data/japan_restaurants.csv`);
