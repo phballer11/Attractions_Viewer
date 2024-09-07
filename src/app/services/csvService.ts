@@ -2,12 +2,13 @@ import Papa from 'papaparse';
 import { RestaurantData } from '../types/RestaurantData';
 import { prefix } from '../utils/prefix';
 
-export const parseCSV = async (): Promise<RestaurantData[]> => {
+export const parseCSV = async (country: string): Promise<RestaurantData[]> => {
     const results: RestaurantData[] = [];
 
-    const response = await fetch(`${prefix}/data/japan_restaurants.csv`);
-    const csvString = await response.text();
+    const filePath = getFilePathByCountry(country);
 
+    const response = await fetch(`${prefix}/data/${filePath}`);
+    const csvString = await response.text();
     Papa.parse(csvString, {
         header: true,
         skipEmptyLines: true,
@@ -55,9 +56,21 @@ export const parseCSV = async (): Promise<RestaurantData[]> => {
             return result;
         },
         complete: (parsedData) => {
+            console.log(parsedData);
             results.push(...(parsedData.data as RestaurantData[]));
         },
     });
 
     return results;
+};
+
+const getFilePathByCountry = (country: string): string => {
+    switch (country) {
+        case 'japan':
+            return 'japan_restaurants.csv';
+        case 'taiwan':
+            return 'taiwan_restaurants.csv';
+        default:
+            return '';
+    }
 };

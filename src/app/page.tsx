@@ -18,8 +18,8 @@ type CountPerRating = {
     grade: number;
 };
 const countryOptions = [
-    { value: 'jp', label: 'Japan' },
-    // { value: 'tw', label: 'Taiwan' },
+    { value: 'japan', label: 'Japan' },
+    { value: 'taiwan', label: 'Taiwan' },
     // { value: 'hk', label: 'Hong Kong' },
     // Add more countries as needed
 ];
@@ -43,6 +43,8 @@ export default function Home() {
             value: selectedOption.value,
             label: selectedOption.label,
         });
+
+        fetchData(selectedOption.value);
     };
 
     const handleSelectChange = (
@@ -137,26 +139,26 @@ export default function Home() {
         setData(filteredData);
     };
 
+    const fetchData = async (country: string) => {
+        try {
+            const result = await parseCSV(country);
+            console.log(result);
+            const allTags = result.map((restaurant) => restaurant.tags).flat();
+            allTags.push(...staticRatingTags);
+
+            const uniqueTags = Array.from(new Set(allTags));
+            const tags = uniqueTags.map((tag) => ({ value: tag, label: tag }));
+
+            setAllFilters(tags);
+            setData(result);
+            setOgData(result);
+        } catch (error) {
+            console.error('Error fetching CSV data:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const result = await parseCSV();
-
-                const allTags = result.map((restaurant) => restaurant.tags).flat();
-                allTags.push(...staticRatingTags);
-
-                const uniqueTags = Array.from(new Set(allTags));
-                const tags = uniqueTags.map((tag) => ({ value: tag, label: tag }));
-
-                setAllFilters(tags);
-                setData(result);
-                setOgData(result);
-            } catch (error) {
-                console.error('Error fetching CSV data:', error);
-            }
-        };
-
-        fetchData();
+        fetchData('japan');
     }, []);
 
     const formatOpeningHours = (openingHours: string[]) => {
