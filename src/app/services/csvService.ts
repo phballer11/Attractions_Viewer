@@ -70,26 +70,34 @@ export const parseCSV = async (): Promise<RestaurantData[]> => {
 };
 
 const getCsvResposne = async () => {
-    // try {
-    //     console.log('prefix in csv:', prefix);
-    //     const response = await fetch(`${prefix}/data/japan_restaurants.csv`);
-    //     const csvString = await response.text();
-    //     return csvString;
-    // } catch (e) {
-    //     console.error('Error fetching CSV for path:`${prefix}/data/japan_restaurants.csv`', e);
-    // }
-
-    // try {
-    //     console.log('second path');
-    //     const response = await fetch(`/data/japan_restaurants.csv`);
-    //     const csvString = await response.text();
-    //     return csvString;
-    // } catch (e) {
-    //     console.error('Error fetching CSV for path:`/data/japan_restaurants.csv`', e);
-    // }
+    try {
+        console.log('prefix in csv:', prefix);
+        const response = await fetch(`${prefix}/data/japan_restaurants.csv`);
+        if (!response.ok) {
+            throw new Error('Error fetching CSV');
+        }
+        const csvString = await response.text();
+        return csvString;
+    } catch (e) {
+        console.error('Error fetching CSV for path:`${prefix}/data/japan_restaurants.csv`', e);
+    }
 
     try {
+        console.log('second path');
+        const response = await fetch(`/data/japan_restaurants.csv`);
+        if (!response.ok) {
+            throw new Error('Error fetching CSV');
+        }
+        const csvString = await response.text();
+        return csvString;
+    } catch (e) {
+        console.error('Error fetching CSV for path:`/data/japan_restaurants.csv`', e);
+    }
+
+    try {
+        console.log('third path');
         const response = await fetch(`Attractions_Viewer/data/japan_restaurants.csv`);
+
         const csvString = await response.text();
         return csvString;
     } catch (e) {
