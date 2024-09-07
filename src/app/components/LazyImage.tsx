@@ -92,7 +92,7 @@ const LazyImage: React.FC<LazyImageProps> = ({ src, alt, placeholder, retryLimit
         <div ref={imageRef} style={{ minHeight: '200px' }}>
             {hasLoaded ? (
                 <img
-                    style={{ width: '240px', height: 'auto', marginRight: '10px', objectFit: 'cover' }}
+                    style={{ width: '300px', height: '300px', marginRight: '10px', objectFit: 'cover' }}
                     src={src}
                     alt={alt}
                 />
