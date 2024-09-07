@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Spinner from './Spinner/Spinner';
 
 interface LazyImageProps {
     src: string;
@@ -96,7 +97,9 @@ const LazyImage: React.FC<LazyImageProps> = ({ src, alt, placeholder, retryLimit
                     src={src}
                     alt={alt}
                 />
-            ) : null}
+            ) : (
+                <Spinner />
+            )}
         </div>
     );
 };

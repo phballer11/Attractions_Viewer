@@ -311,7 +311,7 @@ input[type="checkbox"] {
   border-radius: 12px; /* Rounded corners */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Subtle shadow for depth */
   padding: 16px; /* Spacing inside the tile */
-  margin: 16px 0; 
+  margin-top: 16px; 
   transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effects */
 }
 
@@ -331,6 +331,7 @@ input[type="checkbox"] {
   line-height: 1.6; /* Improved readability with line spacing */
   margin-bottom: 0; /* Remove bottom margin */
 }
+
 .tag {
   display: inline-flex;
   align-items: center;
@@ -340,8 +341,7 @@ input[type="checkbox"] {
   border-radius: 12px; /* Rounded corners */
   padding: 8px 12px; /* Padding inside the tag */
   margin: 4px; /* Margin around the tag */
-  font-size: 0.9em; /* Slightly smaller font size */
-  font-weight: bold; /* Bold text for emphasis */
+  font-size: 1.1em; /* Slightly smaller font size */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Shadow for 3D effect */
   transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth transition */
   transform: translateY(-4px); /* Floating effect */
@@ -364,8 +364,6 @@ input[type="checkbox"] {
 
 .rating_hours_row {
   display: flex;
-  /* justify-content: space-between; */
-  margin-top: 8px;
 
   @media screen and (max-width: 768px) {
     flex-direction: column;
@@ -390,4 +388,6 @@ input[type="checkbox"] {
    }
 }
 
-
+html {
+  scroll-behavior: smooth;
+}

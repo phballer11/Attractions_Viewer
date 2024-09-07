@@ -13,6 +13,9 @@ import ProgressBar from './components/ProgressBar/ProgressBar';
 // Add filter by tags
 // Add countries
 
+// bug:
+// rating count 1
+
 // Nice to have:
 // Add pagination ?
 
@@ -24,7 +27,6 @@ type CountPerRating = {
 
 export default function Home() {
     const [data, setData] = useState<RestaurantData[]>([]);
-    const [showOpeningHours, setShowOpeningHours] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -39,14 +41,6 @@ export default function Home() {
 
         fetchData();
     }, []);
-
-    const toggleOpeningHours = (id: string) => {
-        console.log(id);
-        setShowOpeningHours((prev) => ({
-            ...prev,
-            [id]: !!!prev[id],
-        }));
-    };
 
     const formatOpeningHours = (openingHours: string[]) => {
         if (openingHours.length === 0) {
@@ -95,13 +89,22 @@ export default function Home() {
         }
     };
 
+    const getChainRestaurants = (chainRestaurantId: string | null): RestaurantData[] => {
+        if (!chainRestaurantId) {
+            return [];
+        }
+
+        return data.filter(
+            (restaurant) => restaurant.chainRestaurantId === chainRestaurantId && restaurant.id !== chainRestaurantId
+        );
+    };
     return (
         <main>
             <div className="container">
                 {data ? (
                     <div>
                         {data.map((result, index) => (
-                            <div className="card" key={index}>
+                            <div className="card" key={index} id={result.id}>
                                 <h1>{result.name}</h1>
 
                                 <h2>
@@ -119,7 +122,7 @@ export default function Home() {
                                         <b>Phone:</b> {result.phone}
                                     </p>
                                 )}
-                                <div style={{ margin: '16px 0' }}>
+                                <div style={{ marginTop: '8px' }}>
                                     {result.tags.map((tag, index) => (
                                         <div className="tag" key={index}>
                                             {tag}
@@ -158,14 +161,7 @@ export default function Home() {
                                     )}
                                 </div>
 
-                                {/* {result.count_per_rating.map((rating, index) => (
-                                    <p key={index}>{rating}</p>
-                                ))} */}
-
-                                {/*
-                                <p>{result.chainRestaurantId}</p>
- */}
-                                <div className="information-tile">
+                                <div className="information-tile" style={{ marginBottom: '24px' }}>
                                     <h2>AI summary</h2>
                                     <p>{result.ai_review_summary}</p>
                                 </div>
@@ -182,6 +178,32 @@ export default function Home() {
                                         ))}
                                     </div>
                                 </div>
+                                {result.chainRestaurantId &&
+                                    getChainRestaurants(result.chainRestaurantId).length > 0 && (
+                                        <div className="information-tile">
+                                            <h2>Chain restaurants:</h2>
+                                            {getChainRestaurants(result.chainRestaurantId).map(
+                                                (chainRestaurant, index) => (
+                                                    <div key={index}>
+                                                        <p style={{ fontWeight: 700, fontSize: '24px' }}>
+                                                            <a href={'#' + chainRestaurant.id}>
+                                                                {chainRestaurant.name}
+                                                            </a>
+                                                        </p>
+
+                                                        <p style={{ marginTop: '0' }}>
+                                                            <a
+                                                                style={{ textDecoration: 'none', color: 'white' }}
+                                                                href={result.googleLink}
+                                                            >
+                                                                {result.address}
+                                                            </a>
+                                                        </p>
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
+                                    )}
                             </div>
                         ))}
                     </div>

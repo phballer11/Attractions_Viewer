@@ -1,5 +1,5 @@
 .progress-bar {
-    width: 230px;
+    width: 80%;
     height: 12px; /* Adjust the height as needed */
     background-color: #d3d3d3; /* Grey background */
     border-radius: 4px; /* Rounded corners */

@@ -1,0 +1,24 @@
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.path {
+  stroke: #ffcc00; /* Yellow color for the stroke */
+  stroke-linecap: round; /* Round line edges */
+}
+
+/* Keyframes for spinning animation */
+@keyframes spin {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
