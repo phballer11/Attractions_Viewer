@@ -66,13 +66,15 @@ export default function Home() {
                         <h2>Results:</h2>
                         {data.map((result, index) => (
                             <div style={{ marginBottom: '24px' }} key={index}>
-                                <p>{result.name}</p>
-                                <p>{result.address}</p>
+                                <p>
+                                    {index + 1} - {result.name}
+                                </p>
+                                {/* <p>{result.address}</p>
                                 <p>{result.website}</p>
                                 <p>{result.category}</p>
-                                <p>{result.id}</p>
+                                <p>{result.id}</p> */}
                                 {/* <p>{result.googleLink}</p> */}
-                                <p>{result.latitude}</p>
+                                {/* <p>{result.latitude}</p>
                                 <p>{result.longitude}</p>
                                 <p>{result.phone}</p>
                                 <p>{result.rating}</p>
@@ -86,6 +88,7 @@ export default function Home() {
                                 {result.count_per_rating.map((rating, index) => (
                                     <p key={index}>{rating}</p>
                                 ))}
+                                <p> {result.ai_review_summary}</p> */}
                                 {/* <div className="photo-gallery">
                                     <div className="photos">
                                         {result.images.map((img, index) => (

@@ -15,6 +15,7 @@ export type RestaurantData = {
     longitude: number | null;
     images: string[];
     reviews: string[];
+    ai_review_summary: string;
     tags: string[];
     chainRestaurantId: string | null;
     success: boolean;

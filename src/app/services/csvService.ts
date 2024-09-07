@@ -43,11 +43,11 @@ export const parseCSV = async (): Promise<RestaurantData[]> => {
                     return results;
                 } catch (e) {
                     console.error(`Error parsing JSON for ${header}: ${value}`);
-                    return value.replace(/[^\x20-\x7E]/g, '');
+                    return value;
                 }
             }
 
-            const result = value.replace(/[^\x20-\x7E]/g, '');
+            const result = value;
             if (header === 'website' && result.length > 0 && !result.startsWith('http')) {
                 return `http://${result}`;
             }
