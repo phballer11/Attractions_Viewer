@@ -1,10 +1,11 @@
 import Papa from 'papaparse';
 import { RestaurantData } from '../types/RestaurantData';
+import { prefix } from '../utils/prefix';
 
 export const parseCSV = async (): Promise<RestaurantData[]> => {
     const results: RestaurantData[] = [];
 
-    const response = await fetch('/data/japan_restaurants.csv');
+    const response = await fetch(`${prefix}/data/japan_restaurants.csv`);
     const csvString = await response.text();
 
     Papa.parse(csvString, {
