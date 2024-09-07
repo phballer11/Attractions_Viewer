@@ -6,18 +6,10 @@ import { RestaurantData } from './types/RestaurantData';
 import LazyImage from './components/LazyImage';
 import Star from './components/Star';
 import ProgressBar from './components/ProgressBar/ProgressBar';
+import Select, { ActionMeta, CSSObjectWithLabel, MultiValue } from 'react-select';
 
 // TODO:
-// Add search bar
-// Add filter by rating
-// Add filter by tags
 // Add countries
-
-// bug:
-// rating count 1
-
-// Nice to have:
-// Add pagination ?
 
 type CountPerRating = {
     value: string;
@@ -27,13 +19,120 @@ type CountPerRating = {
 
 export default function Home() {
     const [data, setData] = useState<RestaurantData[]>([]);
+    const [ogData, setOgData] = useState<RestaurantData[]>([]);
+
+    const [allFilters, setAllFilters] = useState<{ value: string; label: string }[]>([]);
+    const [selectedFilters, setSelectedFilters] = useState<{ value: string; label: string }[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const staticRatingTags = ['0-1 star', '1-2 stars', '2-3 stars', '3-4 stars', '4 stars+'];
+
+    const handleSelectChange = (
+        selectedOptions: MultiValue<{ value: string; label: string }>,
+        actionMeta: ActionMeta<{ value: string; label: string }>
+    ) => {
+        setSelectedFilters(selectedOptions.map((option) => option));
+        search(
+            searchTerm,
+            selectedOptions.map((filter) => filter.value)
+        );
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newSearchTerm = e.target.value.toLowerCase();
+        setSearchTerm(newSearchTerm);
+
+        search(
+            newSearchTerm,
+            selectedFilters.map((filter) => filter.value)
+        );
+    };
+
+    const search = (searchTerm: string, selectedFilters: string[]) => {
+        let searchedData = ogData.filter((restaurant) => {
+            if (restaurant.name.toLowerCase().includes(searchTerm)) {
+                return true;
+            }
+
+            if (restaurant.address.toLowerCase().includes(searchTerm)) {
+                return true;
+            }
+
+            if (restaurant.tags.some((tag) => tag.toLowerCase().includes(searchTerm))) {
+                return true;
+            }
+
+            return false;
+        });
+
+        // extract out static rating tags
+        const staticRatingTags = selectedFilters.filter(
+            (filter) =>
+                filter === '0-1 star' ||
+                filter === '1-2 stars' ||
+                filter === '2-3 stars' ||
+                filter === '3-4 stars' ||
+                filter === '4 stars+'
+        );
+
+        if (staticRatingTags.length > 0) {
+            const ratingFilter = staticRatingTags.map((tag) => {
+                if (tag === '0-1 star') {
+                    return (restaurant: RestaurantData) =>
+                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) < 1;
+                } else if (tag === '1-2 stars') {
+                    return (restaurant: RestaurantData) =>
+                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) >= 1 &&
+                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) < 2;
+                } else if (tag === '2-3 stars') {
+                    return (restaurant: RestaurantData) =>
+                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) >= 2 &&
+                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) < 3;
+                } else if (tag === '3-4 stars') {
+                    return (restaurant: RestaurantData) =>
+                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) >= 3 &&
+                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) < 4;
+                } else if (tag === '4 stars+') {
+                    return (restaurant: RestaurantData) =>
+                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) >= 4;
+                }
+                return () => false;
+            });
+            searchedData = searchedData.filter((restaurant) => {
+                return ratingFilter.every((filter) => filter(restaurant));
+            });
+        }
+
+        const filtersWithoutRating = selectedFilters.filter(
+            (filter) =>
+                filter !== '0-1 star' &&
+                filter !== '1-2 stars' &&
+                filter !== '2-3 stars' &&
+                filter !== '3-4 stars' &&
+                filter !== '4 stars+'
+        );
+
+        const filteredData = searchedData.filter((restaurant) => {
+            return filtersWithoutRating.every((filter) => restaurant.tags.includes(filter));
+        });
+
+        setData(filteredData);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const result = await parseCSV();
-                console.log(result);
+
+                const allTags = result.map((restaurant) => restaurant.tags).flat();
+                allTags.push(...staticRatingTags);
+
+                const uniqueTags = Array.from(new Set(allTags));
+                const tags = uniqueTags.map((tag) => ({ value: tag, label: tag }));
+
+                setAllFilters(tags);
                 setData(result);
+                setOgData(result);
             } catch (error) {
                 console.error('Error fetching CSV data:', error);
             }
@@ -68,14 +167,14 @@ export default function Home() {
         */
         try {
             const totalReviews = countPerRating.reduce((total, rating) => {
-                const reviews = parseInt(rating.split(',')[1].trim().split(' ')[0]);
+                const reviews = parseInt(rating.split(/,(.+)/)[1].trim().replace(',', '').split(' ')[0]);
                 return total + reviews;
             }, 0);
 
             return countPerRating.map((rating) => {
-                const splitValue = rating.split(',');
+                const splitValue = rating.split(/,(.+)/);
                 const grade = splitValue[0].split(' ')[0];
-                const numberOfReviews = parseInt(splitValue[1].trim().split(' ')[0]);
+                const numberOfReviews = parseInt(splitValue[1].trim().replace(',', '').split(' ')[0]);
                 const value = ((numberOfReviews / totalReviews) * 100).toFixed(0);
 
                 return {
@@ -98,11 +197,113 @@ export default function Home() {
             (restaurant) => restaurant.chainRestaurantId === chainRestaurantId && restaurant.id !== chainRestaurantId
         );
     };
+
+    const customStyles = {
+        container: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            backgroundColor: '#333', // Dark background for the container
+            borderRadius: '4px',
+            margin: '0 12px 24px 12px',
+        }),
+        control: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            backgroundColor: '#444', // Dark background for the control
+            borderColor: '#666', // Dark border color
+            boxShadow: 'none',
+            '&:hover': {
+                borderColor: '#888', // Slightly lighter border color on hover
+            },
+        }),
+        menu: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            backgroundColor: '#333', // Dark background for the dropdown menu
+            color: '#fff', // White text color
+        }),
+        menuList: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            padding: 0,
+        }),
+        option: (provided: CSSObjectWithLabel, state: any) => ({
+            ...provided,
+            backgroundColor: state.isSelected ? '#555' : '#333', // Dark background for options, lighter on select
+            color: '#fff', // White text color
+            '&:hover': {
+                backgroundColor: '#555', // Slightly lighter background on hover
+            },
+        }),
+        placeholder: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            color: '#aaa', // Placeholder text color
+        }),
+        singleValue: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            color: '#fff', // Text color for selected item
+        }),
+        input: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            color: '#fff', // Input text color
+        }),
+        indicatorSeparator: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            backgroundColor: '#666', // Separator color
+        }),
+        clearIndicator: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            backgroundColor: 'red', // Blue background for clear button
+            color: '#fff', // White text color
+            padding: '0 8px', // Padding inside the button
+            borderRadius: '2px', // Rounded corners for the button
+            '&:hover': {
+                backgroundColor: '#0056b3', // Darker blue on hover
+            },
+        }),
+        dropdownIndicator: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            color: '#fff', // Color for the dropdown indicator
+        }),
+        multiValue: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            backgroundColor: '#007bff', // Background color of multi-value tags
+            borderRadius: '4px', // Rounded corners for multi-value tags
+            padding: '2px 6px', // Padding inside the tag
+        }),
+        multiValueLabel: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            color: '#fff', // Text color inside the multi-value tags
+        }),
+        multiValueRemove: (provided: CSSObjectWithLabel) => ({
+            ...provided,
+            color: '#fff', // Color for the remove icon
+            backgroundColor: 'red', // Blue background for the remove button
+            borderRadius: '50%', // Rounded shape for the remove button
+            ':hover': {
+                backgroundColor: '#0056b3', // Darker blue on hover for remove button
+            },
+        }),
+    };
+
     return (
         <main>
             <div className="container">
                 {data ? (
                     <div>
+                        <div className="search-container">
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={handleChange}
+                                placeholder="Search..."
+                                className="search-input"
+                            />
+                        </div>
+                        <Select
+                            isMulti
+                            options={allFilters}
+                            styles={customStyles}
+                            id="tags-select"
+                            onChange={handleSelectChange}
+                            placeholder="Filter by tags..."
+                        />
                         {data.map((result, index) => (
                             <div className="card" key={index} id={result.id}>
                                 <h1>{result.name}</h1>
