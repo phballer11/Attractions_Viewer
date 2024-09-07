@@ -72,7 +72,7 @@ export const parseCSV = async (): Promise<RestaurantData[]> => {
 const getCsvResposne = async () => {
     try {
         console.log('prefix in csv:', prefix);
-        const response = await fetch(`${prefix}/data/japan_restaurants.csv`);
+        const response = await fetch(`/${prefix}/data/japan_restaurants.csv`);
         if (!response.ok) {
             throw new Error('Error fetching CSV');
         }
@@ -84,7 +84,7 @@ const getCsvResposne = async () => {
 
     try {
         console.log('second path');
-        const response = await fetch(`/data/japan_restaurants.csv`);
+        const response = await fetch(`data/japan_restaurants.csv`);
         if (!response.ok) {
             throw new Error('Error fetching CSV');
         }
