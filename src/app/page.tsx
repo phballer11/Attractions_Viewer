@@ -42,6 +42,8 @@ export default function Home() {
     // };
 
     useEffect(() => {
+        console.log('hello');
+        console.log('prefix:', process.env.NODE_ENV);
         const fetchData = async () => {
             try {
                 const result = await parseCSV();
@@ -58,7 +60,7 @@ export default function Home() {
     return (
         <main className={styles.main}>
             <div>
-                <h1>Prompt</h1>
+                <h1>Promptss</h1>
                 {/* <button onClick={onNotionClicked}>Notion create page</button> */}
 
                 {data ? (
