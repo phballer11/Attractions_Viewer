@@ -142,7 +142,6 @@ export default function Home() {
     const fetchData = async (country: string) => {
         try {
             const result = await parseCSV(country);
-            console.log(result);
             const allTags = result.map((restaurant) => restaurant.tags).flat();
             allTags.push(...staticRatingTags);
 
