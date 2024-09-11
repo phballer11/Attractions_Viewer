@@ -73,6 +73,13 @@ jobs:
                       ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
             - name: Install dependencies
               run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+            - name: Check Firebase API Key
+              run: |
+                  if [ -z "${{ secrets.FIREBASE_API_KEY }}" ]; then
+                    echo "FIREBASE_API_KEY is not set"
+                  else
+                    echo "FIREBASE_API_KEY is set"
+                  fi
             - name: Replace Firebase Config Secrets
               run: |
                   echo "NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}" >> .env
