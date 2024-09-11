@@ -8,6 +8,8 @@ import Star from './components/Star';
 import ProgressBar from './components/ProgressBar/ProgressBar';
 import Select, { ActionMeta, CSSObjectWithLabel, MultiValue, SingleValue } from 'react-select';
 import { COUNTRY_SELECT_STYLES, TAGS_SELECT_STYLES } from './types/contants';
+import { db } from './firebase.config';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
 
 // TODO:
 // Add countries
@@ -217,8 +219,19 @@ export default function Home() {
         );
     };
 
+    const sendToFirebase = async () => {
+        try {
+            const itemsRef = collection(db, 'testing');
+            // const url = `https://www.google.com/maps/place/I'm+donut%3F+Harajuku/@35.6698313,139.7006585,17z/data=!3m2!4b1!5s0x60188ca532902727:0x8abd3387cdbfd1ce!4m6!3m5!1s0x60188d7915ff1545:0xe04fa5adbfdc479c!8m2!3d35.669827!4d139.7032334!16s%2Fg%2F11v5ss24kt?entry=ttu&g_ep=EgoyMDI0MDkwOC4wIKXMDSoASAFQAw%3D%3D`;
+            await addDoc(itemsRef, { link: 'url' });
+        } catch (error) {
+            console.error('Error sending data to firebase:', error);
+        }
+    };
+
     return (
         <main>
+            <button onClick={sendToFirebase}>Testing to firebase</button>
             <div className="container">
                 <div style={{ width: '50%' }}>
                     <Select
