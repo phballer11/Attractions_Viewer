@@ -231,7 +231,7 @@ export default function Home() {
 
     return (
         <main>
-            <button onClick={sendToFirebase}>Testing to firebase</button>
+            {/* <button onClick={sendToFirebase}>Testing to firebase</button> */}
             <div className="container">
                 <div style={{ width: '50%' }}>
                     <Select
