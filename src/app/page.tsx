@@ -7,7 +7,7 @@ import LazyImage from './components/LazyImage';
 import Star from './components/Star';
 import ProgressBar from './components/ProgressBar/ProgressBar';
 import Select, { ActionMeta, MultiValue, SingleValue } from 'react-select';
-import { COUNTRY_SELECT_STYLES, TAGS_SELECT_STYLES } from './types/contants';
+import { COUNTRY_OPTIONS, COUNTRY_SELECT_STYLES, TAGS_SELECT_STYLES } from './types/contants';
 
 // TODO:
 // Add countries
@@ -17,14 +17,9 @@ type CountPerRating = {
     numberOfReviews: number;
     grade: number;
 };
-const countryOptions = [
-    { value: 'japan', label: 'Japan' },
-    { value: 'taiwan', label: 'Taiwan' },
-    // { value: 'hk', label: 'Hong Kong' },
-    // Add more countries as needed
-];
+
 export default function Home() {
-    const [selectedCountry, setSelectedCountry] = useState(countryOptions[0]);
+    const [selectedCountry, setSelectedCountry] = useState(COUNTRY_OPTIONS[0]);
 
     const [data, setData] = useState<RestaurantData[]>([]);
     const [ogData, setOgData] = useState<RestaurantData[]>([]);
@@ -223,7 +218,7 @@ export default function Home() {
             <div className="container">
                 <div style={{ width: '50%' }}>
                     <Select
-                        options={countryOptions}
+                        options={COUNTRY_OPTIONS}
                         styles={COUNTRY_SELECT_STYLES}
                         value={selectedCountry}
                         onChange={handleCountryChange}

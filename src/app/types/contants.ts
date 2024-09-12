@@ -13,6 +13,13 @@ export const POPULAR_JAPAN_CITIES: string[] = [
     'Yokohama',
 ];
 
+export const COUNTRY_OPTIONS = [
+    { value: 'japan', label: 'Japan' },
+    { value: 'taiwan', label: 'Taiwan' },
+    // { value: 'hk', label: 'Hong Kong' },
+    // Add more countries as needed
+];
+
 export const TAGS_SELECT_STYLES = {
     container: (provided: CSSObjectWithLabel) => ({
         ...provided,
