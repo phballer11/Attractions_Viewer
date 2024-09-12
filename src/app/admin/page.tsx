@@ -21,10 +21,16 @@ export default function Admin() {
         }
         const tagsArray = tags.split(',').map((tag) => tag.trim());
         try {
-            const itemsRef = collection(db, 'testing');
+            const itemsRef = collection(db, 'jobs');
             await addDoc(itemsRef, { link: link, searchString: searchString, tags: tagsArray });
         } catch (error) {
             console.error('Error sending data to firebase:', error);
+        } finally {
+            setSearchString('');
+            setLink('');
+            setTags('');
+
+            alert('Submitted, please check back in 10mins.');
         }
     };
 
@@ -34,8 +40,8 @@ export default function Admin() {
 
     return (
         <main>
-            {' '}
             <div className="container">
+                <h1>Submit search request to the queue</h1>
                 <form onSubmit={handleSubmit}>
                     <div className="search-container">
                         <label htmlFor="searchString">Search:</label>
