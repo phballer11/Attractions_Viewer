@@ -69,7 +69,7 @@ const getFilePathByCountry = (country: string): string => {
         case 'japan':
             return 'japan_restaurants.csv';
         case 'taiwan':
-            return 'taiwan_restaurants_test.csv';
+            return 'taiwan_restaurants.csv';
         default:
             return '';
     }
