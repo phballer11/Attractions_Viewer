@@ -67,7 +67,7 @@ export const parseCSV = async (country: string): Promise<RestaurantData[]> => {
 const getFilePathByCountry = (country: string): string => {
     switch (country) {
         case 'japan':
-        // return 'japan_restaurants.csv';
+            return 'japan_restaurants.csv';
         case 'taiwan':
             return 'taiwan_restaurants_test.csv';
         default:
