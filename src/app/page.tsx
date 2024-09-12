@@ -467,9 +467,9 @@ export default function Home() {
                                                 <p style={{ marginTop: '0' }}>
                                                     <a
                                                         style={{ textDecoration: 'none', color: 'white' }}
-                                                        href={result.GoogleLink}
+                                                        href={chainRestaurant.GoogleLink}
                                                     >
-                                                        {result.Address}
+                                                        {chainRestaurant.Address}
                                                     </a>
                                                 </p>
                                             </div>
