@@ -117,6 +117,12 @@ export default function Admin() {
                         Submit
                     </button>
                 </form>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <a href="/">Home page</a>
             </div>
         </main>
     );

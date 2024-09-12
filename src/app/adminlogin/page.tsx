@@ -67,9 +67,17 @@ export default function Admin() {
                     <br />
                     <br />
                     {isLoggedIn && (
-                        <a href="/" style={{ marginTop: '24px' }}>
-                            Home page
-                        </a>
+                        <div>
+                            <a href="/admin" style={{ marginTop: '24px' }}>
+                                Admin page
+                            </a>
+                            <br />
+                            <br />
+                            <br />
+                            <a href="/" style={{ marginTop: '24px' }}>
+                                Home page
+                            </a>
+                        </div>
                     )}
                 </form>
             </div>

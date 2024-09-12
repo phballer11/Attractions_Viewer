@@ -8,6 +8,10 @@ import Star from './components/Star';
 import ProgressBar from './components/ProgressBar/ProgressBar';
 import Select, { ActionMeta, MultiValue, SingleValue } from 'react-select';
 import { COUNTRY_OPTIONS, COUNTRY_SELECT_STYLES, TAGS_SELECT_STYLES } from './types/contants';
+import { checkIfCountrySupported } from './utils/utilService';
+import { collection, addDoc } from 'firebase/firestore';
+import { link } from 'fs';
+import { db } from './firebase.config';
 
 // TODO:
 // Add countries
@@ -27,6 +31,11 @@ export default function Home() {
     const [allFilters, setAllFilters] = useState<{ value: string; label: string }[]>([]);
     const [selectedFilters, setSelectedFilters] = useState<{ value: string; label: string }[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [editModeId, setIsEditMode] = useState<string>('');
+
+    const [tags, setTags] = useState<string[]>([]);
+    const [inputValue, setInputValue] = useState('');
 
     const staticRatingTags = ['0-1 star', '1-2 stars', '2-3 stars', '3-4 stars', '4 stars+'];
 
@@ -153,6 +162,9 @@ export default function Home() {
 
     useEffect(() => {
         fetchData('japan');
+        if (sessionStorage.getItem('user') === 'admin') {
+            setIsAdmin(true);
+        }
     }, []);
 
     const formatOpeningHours = (openingHours: string[]) => {
@@ -212,6 +224,72 @@ export default function Home() {
         );
     };
 
+    // Handle input change
+    const handleInputChange = (event: any) => {
+        setInputValue(event.target.value);
+    };
+
+    // Handle adding a tag
+    const handleAddTag = (event: any) => {
+        event.preventDefault();
+        if (inputValue.trim() !== '') {
+            setTags((prevTags) => [...prevTags, inputValue.trim()]);
+            setInputValue('');
+        }
+    };
+
+    // Handle removing a tag
+    const handleRemoveTag = (tag: string, restaurant: RestaurantData) => {
+        setTags((prevTags) => prevTags.filter((t) => t !== tag));
+    };
+    const handleKeyDown = (event: any) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent the default Enter key behavior
+            handleAddTag(event);
+        }
+    };
+
+    const handleEditModeClick = (id: string) => {
+        if (editModeId === id) {
+            setIsEditMode('');
+            setTags([]);
+        } else {
+            setIsEditMode(id);
+            setTags(data.find((restaurant) => restaurant.Id === id)?.Tags || []);
+        }
+    };
+
+    const onTagChangeSubmit = async (id: string) => {
+        const ogTags = data.find((restaurant) => restaurant.Id === id)?.Tags || [];
+        const uniqueTags = Array.from(new Set(tags.map((tag) => tag.toLocaleLowerCase())));
+        if (arraysAreEqual(ogTags, uniqueTags) || !checkIfCountrySupported(selectedCountry.value)) {
+            setIsEditMode('');
+            setTags([]);
+            return;
+        }
+        const itemsRef = collection(db, 'updateTagsJobs');
+        await addDoc(itemsRef, {
+            id: id,
+            tags: uniqueTags,
+            country: selectedCountry.value,
+        });
+
+        setIsEditMode('');
+        setTags([]);
+        alert('Submitted tag updates, please allow up to 10 mins for data to sync up.');
+    };
+
+    const arraysAreEqual = (arr1: string[], arr2: string[]): boolean => {
+        if (arr1.length !== arr2.length) {
+            return false;
+        }
+
+        const sortedArr1 = [...arr1].sort();
+        const sortedArr2 = [...arr2].sort();
+
+        return sortedArr1.every((value, index) => value === sortedArr2[index]);
+    };
+
     return (
         <main>
             {/* <button onClick={sendToFirebase}>Testing to firebase</button> */}
@@ -268,13 +346,68 @@ export default function Home() {
                                         <b>Phone:</b> {result.Phone}
                                     </p>
                                 )}
-                                <div style={{ marginTop: '8px' }}>
-                                    {result.Tags.map((tag, index) => (
-                                        <div className="tag" key={index}>
-                                            {tag}
+
+                                {editModeId !== result.Id && (
+                                    <div style={{ marginTop: '8px' }}>
+                                        {result.Tags.map((tag, index) => (
+                                            <div className="tag" key={index}>
+                                                {tag}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {(editModeId === result.Id) === true && (
+                                    <div>
+                                        <div className="tagsContainer">
+                                            {tags.map((tag, index) => (
+                                                <div key={index} className="tagItem">
+                                                    {tag}
+                                                    <button
+                                                        className="removeButton"
+                                                        onClick={() => handleRemoveTag(tag, result)}
+                                                    >
+                                                        &times; {/* "x" icon */}
+                                                    </button>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
+                                        <div className="flex_row" style={{ marginBottom: '24px' }}>
+                                            <input
+                                                type="text"
+                                                style={{
+                                                    fontSize: '18px',
+                                                    padding: '10px',
+                                                    width: '300px',
+                                                    height: '40px',
+                                                    borderRadius: '5px',
+                                                    border: '1px solid #ccc',
+                                                }}
+                                                value={inputValue}
+                                                onKeyDown={handleKeyDown}
+                                                onChange={handleInputChange}
+                                                placeholder="Enter a tag"
+                                            />
+                                            <button className="button btn-submit" onClick={handleAddTag}>
+                                                Add Tag
+                                            </button>
+                                        </div>
+                                        <button
+                                            className="button btn-submit"
+                                            onClick={() => onTagChangeSubmit(result.Id)}
+                                        >
+                                            Save
+                                        </button>
+                                    </div>
+                                )}
+                                {isAdmin && (
+                                    <button
+                                        style={{ margin: '16px 0' }}
+                                        className="button"
+                                        onClick={() => handleEditModeClick(result.Id)}
+                                    >
+                                        {editModeId === result.Id ? 'Cancel' : 'Edit tags'}
+                                    </button>
+                                )}
                                 <div className="rating_hours_row ">
                                     <div className="rating_section information-tile">
                                         <div className="rating">
