@@ -214,14 +214,12 @@ export default function Home() {
         }
     };
 
-    const getChainRestaurants = (chainRestaurantId: string | null): RestaurantData[] => {
-        if (!chainRestaurantId) {
+    const getChainRestaurants = (restaurant: RestaurantData): RestaurantData[] => {
+        if (!restaurant.ChainRestaurantId) {
             return [];
         }
 
-        return data.filter(
-            (restaurant) => restaurant.ChainRestaurantId === chainRestaurantId && restaurant.Id !== chainRestaurantId
-        );
+        return data.filter((d) => d.ChainRestaurantId === restaurant.ChainRestaurantId && d.Id !== restaurant.Id);
     };
 
     // Handle input change
@@ -457,32 +455,27 @@ export default function Home() {
                                         ))}
                                     </div>
                                 </div>
-                                {result.ChainRestaurantId &&
-                                    getChainRestaurants(result.ChainRestaurantId).length > 0 && (
-                                        <div className="information-tile">
-                                            <h2>Chain restaurants:</h2>
-                                            {getChainRestaurants(result.ChainRestaurantId).map(
-                                                (chainRestaurant, index) => (
-                                                    <div key={index}>
-                                                        <p style={{ fontWeight: 700, fontSize: '24px' }}>
-                                                            <a href={'#' + chainRestaurant.Id}>
-                                                                {chainRestaurant.Name}
-                                                            </a>
-                                                        </p>
+                                {result.ChainRestaurantId && getChainRestaurants(result).length > 0 && (
+                                    <div className="information-tile">
+                                        <h2>Chain restaurants:</h2>
+                                        {getChainRestaurants(result).map((chainRestaurant, index) => (
+                                            <div key={index}>
+                                                <p style={{ fontWeight: 700, fontSize: '24px' }}>
+                                                    <a href={'#' + chainRestaurant.Id}>{chainRestaurant.Name}</a>
+                                                </p>
 
-                                                        <p style={{ marginTop: '0' }}>
-                                                            <a
-                                                                style={{ textDecoration: 'none', color: 'white' }}
-                                                                href={result.GoogleLink}
-                                                            >
-                                                                {result.Address}
-                                                            </a>
-                                                        </p>
-                                                    </div>
-                                                )
-                                            )}
-                                        </div>
-                                    )}
+                                                <p style={{ marginTop: '0' }}>
+                                                    <a
+                                                        style={{ textDecoration: 'none', color: 'white' }}
+                                                        href={result.GoogleLink}
+                                                    >
+                                                        {result.Address}
+                                                    </a>
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

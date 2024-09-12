@@ -1,420 +1,402 @@
 :root {
-  --max-width: 1100px;
-  --border-radius: 12px;
-  --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
-    "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
-    "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+    --max-width: 1100px;
+    --border-radius: 12px;
+    --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono', 'Roboto Mono', 'Oxygen Mono',
+        'Ubuntu Monospace', 'Source Code Pro', 'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
 
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-
-  --primary-glow: conic-gradient(
-    from 180deg at 50% 50%,
-    #16abff33 0deg,
-    #0885ff33 55deg,
-    #54d6ff33 120deg,
-    #0071ff33 160deg,
-    transparent 360deg
-  );
-  --secondary-glow: radial-gradient(
-    rgba(255, 255, 255, 1),
-    rgba(255, 255, 255, 0)
-  );
-
-  --tile-start-rgb: 239, 245, 249;
-  --tile-end-rgb: 228, 232, 233;
-  --tile-border: conic-gradient(
-    #00000080,
-    #00000040,
-    #00000030,
-    #00000020,
-    #00000010,
-    #00000010,
-    #00000080
-  );
-
-  --callout-rgb: 238, 240, 241;
-  --callout-border-rgb: 172, 175, 176;
-  --card-rgb: 180, 185, 188;
-  --card-border-rgb: 131, 134, 135;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
     --foreground-rgb: 255, 255, 255; /* White text color */
     --background-start-rgb: 18, 18, 18; /* Midnight Black */
     --background-end-rgb: 18, 18, 18; /* Midnight Black */
 
     --primary-glow: radial-gradient(rgba(1, 65, 255, 0.4), rgba(1, 65, 255, 0)); /* Blue glow */
     --secondary-glow: linear-gradient(
-      to bottom right,
-      rgba(1, 65, 255, 0),
-      rgba(1, 65, 255, 0),
-      rgba(1, 65, 255, 0.3)
+        to bottom right,
+        rgba(1, 65, 255, 0),
+        rgba(1, 65, 255, 0),
+        rgba(1, 65, 255, 0.3)
     ); /* Blue gradient glow */
-
     --tile-start-rgb: 42, 42, 42; /* Gunmetal */
     --tile-end-rgb: 42, 42, 42; /* Gunmetal */
     --tile-border: conic-gradient(
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.05),
-      rgba(255, 255, 255, 0.03),
-      rgba(255, 255, 255, 0.02),
-      rgba(255, 255, 255, 0.01),
-      rgba(255, 255, 255, 0.01),
-      rgba(255, 255, 255, 0.1)
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.03),
+        rgba(255, 255, 255, 0.02),
+        rgba(255, 255, 255, 0.01),
+        rgba(255, 255, 255, 0.01),
+        rgba(255, 255, 255, 0.1)
     ); /* Subtle white border gradient */
 
     --callout-rgb: 20, 20, 20; /* Dark grey callout */
     --callout-border-rgb: 108, 108, 108; /* Light grey callout border */
     --card-rgb: 220, 220, 220; /* Soft grey for card background */
     --card-border-rgb: 160, 160, 160; /* Medium grey for card border */
-  }
 }
 
+@media (prefers-color-scheme: dark) {
+    :root {
+        --foreground-rgb: 255, 255, 255; /* White text color */
+        --background-start-rgb: 18, 18, 18; /* Midnight Black */
+        --background-end-rgb: 18, 18, 18; /* Midnight Black */
+
+        --primary-glow: radial-gradient(rgba(1, 65, 255, 0.4), rgba(1, 65, 255, 0)); /* Blue glow */
+        --secondary-glow: linear-gradient(
+            to bottom right,
+            rgba(1, 65, 255, 0),
+            rgba(1, 65, 255, 0),
+            rgba(1, 65, 255, 0.3)
+        ); /* Blue gradient glow */
+
+        --tile-start-rgb: 42, 42, 42; /* Gunmetal */
+        --tile-end-rgb: 42, 42, 42; /* Gunmetal */
+        --tile-border: conic-gradient(
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0.03),
+            rgba(255, 255, 255, 0.02),
+            rgba(255, 255, 255, 0.01),
+            rgba(255, 255, 255, 0.01),
+            rgba(255, 255, 255, 0.1)
+        ); /* Subtle white border gradient */
+
+        --callout-rgb: 20, 20, 20; /* Dark grey callout */
+        --callout-border-rgb: 108, 108, 108; /* Light grey callout border */
+        --card-rgb: 220, 220, 220; /* Soft grey for card background */
+        --card-border-rgb: 160, 160, 160; /* Medium grey for card border */
+    }
+}
 
 * {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }
 
 html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
 
 a {
-  color: #007bff;
-  /* text-decoration: none; */
+    color: #007bff;
+    /* text-decoration: none; */
 }
 
 @media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+    html {
+        color-scheme: dark;
+    }
 }
 
 .photo-gallery {
-  width: 100%;           
-  overflow-x: auto;
-  white-space: nowrap;   
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 .photos {
-  display: inline-flex;  
+    display: inline-flex;
 }
 
 .photos img {
-  width: 120px;          
-  height: auto;          
-  margin-right: 10px;    
-  object-fit: cover;     
+    width: 120px;
+    height: auto;
+    margin-right: 10px;
+    object-fit: cover;
 }
 
 .container {
-  @media screen and (min-width: 769px) {
-    padding: 0 96px;
-    
-  }
+    @media screen and (min-width: 769px) {
+        padding: 0 96px;
+    }
 
-  max-width: 100%;
-  margin: 16px auto;
-  padding: 0 10px;
+    max-width: 100%;
+    margin: 16px auto;
+    padding: 0 10px;
 }
 
 .flex_column {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .flex_row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
 }
 
 .margin_bottom {
-  margin-bottom: 16px;
+    margin-bottom: 16px;
 }
 
 .button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: var(--border-radius);
-  background: white;
-  color: black;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    background: white;
+    color: black;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .btn-submit {
-  background: #007bff;
-  color: white;
+    background: #007bff;
+    color: white;
 }
-
 
 .btn-disabled {
-  background: #6c757d;
-  color: white;
-  cursor: not-allowed;
+    background: #6c757d;
+    color: white;
+    cursor: not-allowed;
 }
 
-
-.btn-cancel{
-  background: #dc3545;
-  color: white;
+.btn-cancel {
+    background: #dc3545;
+    color: white;
 }
 
-input[type="checkbox"] {
-  width: 24px;
-  height: 24px;
-  border: 2px solid #007bff;
-  background-color: #f0f0f0;
+input[type='checkbox'] {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #007bff;
+    background-color: #f0f0f0;
 }
 
 .tagsContainer {
-  display: flex;
-  flex-wrap: wrap; /* Allows wrapping if tags exceed container width */
-  gap: 10px; /* Space between tags */
-  margin: 10px 0; /* Margin above and below the tags container */
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping if tags exceed container width */
+    gap: 10px; /* Space between tags */
+    margin: 10px 0; /* Margin above and below the tags container */
 }
 
 .tagItem {
-  display: flex;
-  align-items: center;
-  background-color: #00BFFF; /* Brighter blue background for the tag */
-  border-radius: 20px; /* Round border for the tag */
-  font-size: 12px;
-  padding: 4px 8px; 
-  white-space: nowrap; /* Prevents text from wrapping */
+    display: flex;
+    align-items: center;
+    background-color: #00bfff; /* Brighter blue background for the tag */
+    border-radius: 20px; /* Round border for the tag */
+    font-size: 12px;
+    padding: 4px 8px;
+    white-space: nowrap; /* Prevents text from wrapping */
 }
 
 .removeButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px; /* Larger button size */
-  height: 30px; /* Larger button size */
-  background-color: #ff4d4d; /* Red background for the remove button */
-  border-radius: 50%; /* Round shape for the button */
-  color: white;
-  font-size: 20px; /* Larger "x" icon size */
-  margin-left: 8px; /* Space between tag text and remove button */
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; /* Larger button size */
+    height: 30px; /* Larger button size */
+    background-color: #ff4d4d; /* Red background for the remove button */
+    border-radius: 50%; /* Round shape for the button */
+    color: white;
+    font-size: 20px; /* Larger "x" icon size */
+    margin-left: 8px; /* Space between tag text and remove button */
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
 .removeButton:hover {
-  background-color: #cc0000; /* Darker red on hover */
+    background-color: #cc0000; /* Darker red on hover */
 }
 
 .card {
-  background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white background for the card */
-  color: #e0e0e0; /* Light grey text color for readability */
-  border-radius: 12px; /* Rounded corners */
-  padding: 16px; /* Padding inside the card */
-  margin: 12px; /* Margin around the card */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
-  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effects */
-  position: relative; /* For positioning relative elements */
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white background for the card */
+    color: #e0e0e0; /* Light grey text color for readability */
+    border-radius: 12px; /* Rounded corners */
+    padding: 16px; /* Padding inside the card */
+    margin: 12px; /* Margin around the card */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effects */
+    position: relative; /* For positioning relative elements */
 }
 .card:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
-  transform: translateY(-4px); /* Enhanced floating effect on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
+    transform: translateY(-4px); /* Enhanced floating effect on hover */
 }
 
 .card h1 {
-  font-size: 1.8em; /* Larger font size for the name */
-  margin-top: 0; /* Remove top margin */
-  color: #ffffff; /* White color for the name */
+    font-size: 1.8em; /* Larger font size for the name */
+    margin-top: 0; /* Remove top margin */
+    color: #ffffff; /* White color for the name */
 }
 
 .card h2 {
-  font-size: 1.2em; /* Slightly smaller font size for the address */
-  margin: 8px 0; /* Vertical margin */
-  color: #c0c0c0; /* Light grey color for the address */
+    font-size: 1.2em; /* Slightly smaller font size for the address */
+    margin: 8px 0; /* Vertical margin */
+    color: #c0c0c0; /* Light grey color for the address */
 }
 
 .card h2 a {
-  color: #4a90e2; /* Brighter blue for links */
-  text-decoration: none; /* Remove underline from links */
+    color: #4a90e2; /* Brighter blue for links */
+    text-decoration: none; /* Remove underline from links */
 }
 
 .card h2 a:hover {
-  text-decoration: underline; /* Underline on hover for links */
+    text-decoration: underline; /* Underline on hover for links */
 }
 
 .card p {
-  font-size: 1em; /* Standard font size for paragraphs */
-  margin-top: 8px; /* Vertical margin for spacing */
+    font-size: 1em; /* Standard font size for paragraphs */
+    margin-top: 8px; /* Vertical margin for spacing */
 }
 
 .card p b {
-  color: #ffffff; /* White color for bold labels */
+    color: #ffffff; /* White color for bold labels */
 }
 
 .card p a {
-  color: #4a90e2; /* Brighter blue for website links */
-  text-decoration: none; /* Remove underline from website links */
+    color: #4a90e2; /* Brighter blue for website links */
+    text-decoration: none; /* Remove underline from website links */
 }
 
 .card p a:hover {
-  text-decoration: underline; /* Underline on hover for website links */
+    text-decoration: underline; /* Underline on hover for website links */
 }
 .card-header {
-  font-size: 1.25em; /* Larger font size for the card header */
-  margin-bottom: 8px; /* Space below the header */
-  color: #ffffff; /* White color for the header text */
+    font-size: 1.25em; /* Larger font size for the card header */
+    margin-bottom: 8px; /* Space below the header */
+    color: #ffffff; /* White color for the header text */
 }
 
 .card-body {
-  font-size: 1em; /* Standard font size for card body */
-  color: #d0d0d0; /* Light grey text color for the body */
+    font-size: 1em; /* Standard font size for card body */
+    color: #d0d0d0; /* Light grey text color for the body */
 }
 
 .card-footer {
-  margin-top: 12px; /* Space above the footer */
-  text-align: right; /* Align footer content to the right */
-  color: #4a90e2; /* Blue color for links or actions */
+    margin-top: 12px; /* Space above the footer */
+    text-align: right; /* Align footer content to the right */
+    color: #4a90e2; /* Blue color for links or actions */
 }
 
 .card-footer a {
-  text-decoration: none; /* Remove underline from links */
-  color: #4a90e2; /* Blue color for links */
-  font-weight: bold; /* Bold font for emphasis */
+    text-decoration: none; /* Remove underline from links */
+    color: #4a90e2; /* Blue color for links */
+    font-weight: bold; /* Bold font for emphasis */
 }
 
 .card-footer a:hover {
-  color: #357abd; /* Darker blue on hover */
+    color: #357abd; /* Darker blue on hover */
 }
 
 .information-tile {
-  background-color: rgba(255, 255, 255, 0.3); /* Brighter, semi-transparent background */
-  color: #e0e0e0; /* Light grey text color for readability */
-  border-radius: 12px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Subtle shadow for depth */
-  padding: 16px; /* Spacing inside the tile */
-  margin-top: 16px; 
-  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effects */
+    background-color: rgba(255, 255, 255, 0.3); /* Brighter, semi-transparent background */
+    color: #e0e0e0; /* Light grey text color for readability */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Subtle shadow for depth */
+    padding: 16px; /* Spacing inside the tile */
+    margin-top: 16px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effects */
 }
 
 .information-tile:hover {
-  background-color: rgba(255, 255, 255, 0.4); /* Slightly brighter background on hover */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6); /* More pronounced shadow on hover */
+    background-color: rgba(255, 255, 255, 0.4); /* Slightly brighter background on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6); /* More pronounced shadow on hover */
 }
 
 .information-tile h2 {
-  font-size: 1.5em; /* Larger font size for headers */
-  margin-top: 0; /* Remove top margin */
-  color: #ffffff; /* White color for headers */
+    font-size: 1.5em; /* Larger font size for headers */
+    margin-top: 0; /* Remove top margin */
+    color: #ffffff; /* White color for headers */
 }
 
 .information-tile p {
-  font-size: 1em; /* Standard font size for paragraphs */
-  line-height: 1.6; /* Improved readability with line spacing */
-  margin-bottom: 0; /* Remove bottom margin */
+    font-size: 1em; /* Standard font size for paragraphs */
+    line-height: 1.6; /* Improved readability with line spacing */
+    margin-bottom: 0; /* Remove bottom margin */
 }
 
 .tag {
-  display: inline-flex;
-  align-items: center;
-  background-color: #608fc1; /* Brighter blue with transparency */
-  /* background-color: rgba(0, 122, 255, 0.2); */
-  color: white; /* Bright blue text color */
-  border-radius: 12px; /* Rounded corners */
-  padding: 8px 12px; /* Padding inside the tag */
-  margin: 4px; /* Margin around the tag */
-  font-size: 1.1em; /* Slightly smaller font size */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Shadow for 3D effect */
-  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth transition */
-  transform: translateY(-4px); /* Floating effect */
+    display: inline-flex;
+    align-items: center;
+    background-color: #608fc1; /* Brighter blue with transparency */
+    /* background-color: rgba(0, 122, 255, 0.2); */
+    color: white; /* Bright blue text color */
+    border-radius: 12px; /* Rounded corners */
+    padding: 8px 12px; /* Padding inside the tag */
+    margin: 4px; /* Margin around the tag */
+    font-size: 1.1em; /* Slightly smaller font size */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Shadow for 3D effect */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth transition */
+    transform: translateY(-4px); /* Floating effect */
 }
 
 .tag:hover {
-  background-color: rgba(0, 122, 255, 0.3); /* Slightly less transparent on hover */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
-  transform: translateY(-6px); /* Enhanced floating effect on hover */
+    background-color: rgba(0, 122, 255, 0.3); /* Slightly less transparent on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
+    transform: translateY(-6px); /* Enhanced floating effect on hover */
 }
 
 .rating {
-  display: flex;
-  align-items: center;
-  font-size: 24px;
-  font-weight: 700;
-  color: #e0e0e0; /* Light grey text color */
-  
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #e0e0e0; /* Light grey text color */
 }
 
 .rating_hours_row {
-  display: flex;
+    display: flex;
 
-  @media screen and (max-width: 768px) {
-    flex-direction: column;
-    
-  }
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+    }
 }
 
 .rating_section {
-  flex: 1;
-  margin-right: 24px;
+    flex: 1;
+    margin-right: 24px;
 
-  @media screen and (max-width: 768px) {
-   width: 100%; 
-  }
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
 }
 
 .hours_section {
-  flex: 1;
+    flex: 1;
 
-  @media screen and (max-width: 768px) {
-    width: 100%; 
-   }
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
 }
 
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
 .search-container {
-  width: 100%;
-  display: flex;
-  margin: 16px 0;
+    width: 100%;
+    display: flex;
+    margin: 16px 0;
 }
 
 .search-input {
-  width: 100%;
-  margin: 0 12px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background-color: #1a1a1a; /* Dark background */
-  color: white; /* Light text color */
-  font-size: 16px;
-  outline: none;
-  transition: border-color 0.3s ease;
+    width: 100%;
+    margin: 0 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background-color: #1a1a1a; /* Dark background */
+    color: white; /* Light text color */
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease;
 }
 
 .search-input::placeholder {
-  color: #888; /* Darker placeholder color */
+    color: #888; /* Darker placeholder color */
 }
 
 .search-input:focus {
-  border-color: #00bfff; /* Bright blue border on focus */
+    border-color: #00bfff; /* Bright blue border on focus */
 }
