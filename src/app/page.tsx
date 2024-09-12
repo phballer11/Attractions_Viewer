@@ -6,7 +6,7 @@ import { RestaurantData } from './types/RestaurantData';
 import LazyImage from './components/LazyImage';
 import Star from './components/Star';
 import ProgressBar from './components/ProgressBar/ProgressBar';
-import Select, { ActionMeta, CSSObjectWithLabel, MultiValue, SingleValue } from 'react-select';
+import Select, { ActionMeta, MultiValue, SingleValue } from 'react-select';
 import { COUNTRY_SELECT_STYLES, TAGS_SELECT_STYLES } from './types/contants';
 import { db } from './firebase.config';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
@@ -53,10 +53,10 @@ export default function Home() {
         selectedOptions: MultiValue<{ value: string; label: string }>,
         actionMeta: ActionMeta<{ value: string; label: string }>
     ) => {
-        setSelectedFilters(selectedOptions.map((option) => option));
+        setSelectedFilters(selectedOptions.map((option: any) => option));
         search(
             searchTerm,
-            selectedOptions.map((filter) => filter.value)
+            selectedOptions.map((filter: any) => filter.value)
         );
     };
 
@@ -72,15 +72,15 @@ export default function Home() {
 
     const search = (searchTerm: string, selectedFilters: string[]) => {
         let searchedData = ogData.filter((restaurant) => {
-            if (restaurant.name.toLowerCase().includes(searchTerm)) {
+            if (restaurant.Name.toLowerCase().includes(searchTerm)) {
                 return true;
             }
 
-            if (restaurant.address.toLowerCase().includes(searchTerm)) {
+            if (restaurant.Address.toLowerCase().includes(searchTerm)) {
                 return true;
             }
 
-            if (restaurant.tags.some((tag) => tag.toLowerCase().includes(searchTerm))) {
+            if (restaurant.Tags.some((tag) => tag.toLowerCase().includes(searchTerm))) {
                 return true;
             }
 
@@ -101,22 +101,22 @@ export default function Home() {
             const ratingFilter = staticRatingTags.map((tag) => {
                 if (tag === '0-1 star') {
                     return (restaurant: RestaurantData) =>
-                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) < 1;
+                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) < 1;
                 } else if (tag === '1-2 stars') {
                     return (restaurant: RestaurantData) =>
-                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) >= 1 &&
-                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) < 2;
+                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) >= 1 &&
+                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) < 2;
                 } else if (tag === '2-3 stars') {
                     return (restaurant: RestaurantData) =>
-                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) >= 2 &&
-                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) < 3;
+                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) >= 2 &&
+                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) < 3;
                 } else if (tag === '3-4 stars') {
                     return (restaurant: RestaurantData) =>
-                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) >= 3 &&
-                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) < 4;
+                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) >= 3 &&
+                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) < 4;
                 } else if (tag === '4 stars+') {
                     return (restaurant: RestaurantData) =>
-                        parseFloat(restaurant.rating.toString().replace('stars', '').trim()) >= 4;
+                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) >= 4;
                 }
                 return () => false;
             });
@@ -135,7 +135,7 @@ export default function Home() {
         );
 
         const filteredData = searchedData.filter((restaurant) => {
-            return filtersWithoutRating.every((filter) => restaurant.tags.includes(filter));
+            return filtersWithoutRating.every((filter) => restaurant.Tags.includes(filter));
         });
 
         setData(filteredData);
@@ -144,7 +144,7 @@ export default function Home() {
     const fetchData = async (country: string) => {
         try {
             const result = await parseCSV(country);
-            const allTags = result.map((restaurant) => restaurant.tags).flat();
+            const allTags = result.map((restaurant) => restaurant.Tags).flat();
             allTags.push(...staticRatingTags);
 
             const uniqueTags = Array.from(new Set(allTags));
@@ -215,7 +215,7 @@ export default function Home() {
         }
 
         return data.filter(
-            (restaurant) => restaurant.chainRestaurantId === chainRestaurantId && restaurant.id !== chainRestaurantId
+            (restaurant) => restaurant.ChainRestaurantId === chainRestaurantId && restaurant.Id !== chainRestaurantId
         );
     };
 
@@ -264,26 +264,29 @@ export default function Home() {
                         />
                         <div style={{ margin: '0 16px' }}>{data.length} results</div>
                         {data.map((result, index) => (
-                            <div className="card" key={index} id={result.id}>
-                                <h1>{result.name}</h1>
+                            <div className="card" key={index} id={result.Id}>
+                                <h1>{result.Name}</h1>
 
                                 <h2>
-                                    <a style={{ textDecoration: 'none' }} href={result.googleLink}>
-                                        {result.address}
+                                    <a style={{ textDecoration: 'none' }} href={result.GoogleLink} target="_blank">
+                                        {result.Address}
                                     </a>
                                 </h2>
-                                {result.website && (
+                                {result.Website && (
                                     <p style={{ marginTop: '8px' }}>
-                                        <b> Website:</b> <a href={result.website}>{result.website}</a>
+                                        <b> Website:</b>{' '}
+                                        <a href={result.Website} target="_blank">
+                                            {result.Website}
+                                        </a>
                                     </p>
                                 )}
-                                {result.phone && (
+                                {result.Phone && (
                                     <p style={{ marginTop: '8px' }}>
-                                        <b>Phone:</b> {result.phone}
+                                        <b>Phone:</b> {result.Phone}
                                     </p>
                                 )}
                                 <div style={{ marginTop: '8px' }}>
-                                    {result.tags.map((tag, index) => (
+                                    {result.Tags.map((tag, index) => (
                                         <div className="tag" key={index}>
                                             {tag}
                                         </div>
@@ -292,12 +295,12 @@ export default function Home() {
                                 <div className="rating_hours_row ">
                                     <div className="rating_section information-tile">
                                         <div className="rating">
-                                            <div>{result.rating.toString().replace('stars', '').trim()}</div>
+                                            <div>{result.Rating.toString().replace('stars', '').trim()}</div>
                                             <Star />
-                                            <span className="review-count">{result.ratingCount}</span>
+                                            <span className="review-count">{result.RatingCount}</span>
                                         </div>
-                                        {formatCountPerRating(result.count_per_rating) &&
-                                            formatCountPerRating(result.count_per_rating).map((rating, index) => (
+                                        {formatCountPerRating(result.CountPerRating) &&
+                                            formatCountPerRating(result.CountPerRating).map((rating, index) => (
                                                 <div key={index}>
                                                     <div className="flex_row" style={{ marginTop: '6px' }}>
                                                         <span style={{ width: '10px' }}>{rating.grade}</span>
@@ -309,11 +312,11 @@ export default function Home() {
                                                 </div>
                                             ))}
                                     </div>
-                                    {result.openingHours.length > 0 && (
+                                    {result.OpeningHours.length > 0 && (
                                         <div className="hours_section information-tile">
                                             <h2>Opening Hours:</h2>
                                             <div>
-                                                {formatOpeningHours(result.openingHours).map((hour, index) => (
+                                                {formatOpeningHours(result.OpeningHours).map((hour, index) => (
                                                     <p key={index}>{hour}</p>
                                                 ))}
                                             </div>
@@ -323,11 +326,11 @@ export default function Home() {
 
                                 <div className="information-tile" style={{ marginBottom: '24px' }}>
                                     <h2>AI summary</h2>
-                                    <p>{result.ai_review_summary}</p>
+                                    <p>{result.AiReviewSummary}</p>
                                 </div>
                                 <div className="photo-gallery">
                                     <div className="photos">
-                                        {result.images.map((img, index) => (
+                                        {result.Images.map((img, index) => (
                                             <LazyImage
                                                 key={index}
                                                 src={img}
@@ -338,32 +341,27 @@ export default function Home() {
                                         ))}
                                     </div>
                                 </div>
-                                {result.chainRestaurantId &&
-                                    getChainRestaurants(result.chainRestaurantId).length > 0 && (
-                                        <div className="information-tile">
-                                            <h2>Chain restaurants:</h2>
-                                            {getChainRestaurants(result.chainRestaurantId).map(
-                                                (chainRestaurant, index) => (
-                                                    <div key={index}>
-                                                        <p style={{ fontWeight: 700, fontSize: '24px' }}>
-                                                            <a href={'#' + chainRestaurant.id}>
-                                                                {chainRestaurant.name}
-                                                            </a>
-                                                        </p>
+                                {result.ChainRestaurantId && getChainRestaurants(result.ChainRestaurantId).length > 0 && (
+                                    <div className="information-tile">
+                                        <h2>Chain restaurants:</h2>
+                                        {getChainRestaurants(result.ChainRestaurantId).map((chainRestaurant, index) => (
+                                            <div key={index}>
+                                                <p style={{ fontWeight: 700, fontSize: '24px' }}>
+                                                    <a href={'#' + chainRestaurant.Id}>{chainRestaurant.Name}</a>
+                                                </p>
 
-                                                        <p style={{ marginTop: '0' }}>
-                                                            <a
-                                                                style={{ textDecoration: 'none', color: 'white' }}
-                                                                href={result.googleLink}
-                                                            >
-                                                                {result.address}
-                                                            </a>
-                                                        </p>
-                                                    </div>
-                                                )
-                                            )}
-                                        </div>
-                                    )}
+                                                <p style={{ marginTop: '0' }}>
+                                                    <a
+                                                        style={{ textDecoration: 'none', color: 'white' }}
+                                                        href={result.GoogleLink}
+                                                    >
+                                                        {result.Address}
+                                                    </a>
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

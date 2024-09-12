@@ -14,15 +14,15 @@ export const parseCSV = async (country: string): Promise<RestaurantData[]> => {
         skipEmptyLines: true,
         transform: (value: string, header: string) => {
             if (
-                header === 'openingHours' ||
-                header === 'count_per_rating' ||
-                header === 'images' ||
-                header === 'reviews' ||
-                header === 'tags'
+                header === 'OpeningHours' ||
+                header === 'CountPerRating' ||
+                header === 'Images' ||
+                header === 'Reviews' ||
+                header === 'Tags'
             ) {
                 try {
                     const results: string[] = JSON.parse(value) as string[];
-                    if (header === 'reviews') {
+                    if (header === 'Reviews') {
                         const uniqueArray: string[] = Array.from(new Set(results))
                             .filter((item) => item.length > 4)
                             .sort((a, b) => b.length - a.length);
@@ -30,7 +30,7 @@ export const parseCSV = async (country: string): Promise<RestaurantData[]> => {
                         return uniqueArray;
                     }
 
-                    if (header === 'images') {
+                    if (header === 'Images') {
                         const uniqueUrls = results.filter((url, index, self) => {
                             const match = url.match(/\/p\/(.*?)=/);
                             if (match) {
@@ -49,9 +49,9 @@ export const parseCSV = async (country: string): Promise<RestaurantData[]> => {
                 }
             }
 
-            const result = value;
-            if (header === 'website' && result.length > 0 && !result.startsWith('http')) {
-                return `http://${result}`;
+            const result = value.replace('', '').replace('', '').replace('', '');
+            if (header === 'Website' && result.length > 0 && !result.startsWith('http')) {
+                return `https://${result}`;
             }
             return result;
         },
@@ -67,9 +67,9 @@ export const parseCSV = async (country: string): Promise<RestaurantData[]> => {
 const getFilePathByCountry = (country: string): string => {
     switch (country) {
         case 'japan':
-            return 'japan_restaurants.csv';
+        // return 'japan_restaurants.csv';
         case 'taiwan':
-            return 'taiwan_restaurants.csv';
+            return 'taiwan_restaurants_test.csv';
         default:
             return '';
     }
