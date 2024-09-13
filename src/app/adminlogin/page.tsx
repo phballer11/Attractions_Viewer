@@ -68,13 +68,16 @@ export default function Admin() {
                     <br />
                     {isLoggedIn && (
                         <div>
-                            <a href="/admin" style={{ marginTop: '24px' }}>
+                            <a
+                                href="https://phballer11.github.io/Attractions_Viewer/admin"
+                                style={{ marginTop: '24px' }}
+                            >
                                 Admin page
                             </a>
                             <br />
                             <br />
                             <br />
-                            <a href="/" style={{ marginTop: '24px' }}>
+                            <a href="https://phballer11.github.io/Attractions_Viewer/" style={{ marginTop: '24px' }}>
                                 Home page
                             </a>
                         </div>

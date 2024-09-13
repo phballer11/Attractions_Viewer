@@ -70,6 +70,12 @@ const getFilePathByCountry = (country: string): string => {
             return 'japan_restaurants.csv';
         case 'taiwan':
             return 'taiwan_restaurants.csv';
+        case 'hongkong':
+            return 'hong_kong_restaurants.csv';
+        case 'malaysia':
+            return 'malaysia_restaurants.csv';
+        case 'singapore':
+            return 'singapore_restaurants.csv';
         default:
             return '';
     }

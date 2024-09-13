@@ -16,7 +16,9 @@ export const POPULAR_JAPAN_CITIES: string[] = [
 export const COUNTRY_OPTIONS = [
     { value: 'japan', label: 'Japan' },
     { value: 'taiwan', label: 'Taiwan' },
-    // { value: 'hk', label: 'Hong Kong' },
+    { value: 'hongkong', label: 'Hong Kong' },
+    { value: 'malaysia', label: 'Malaysia' },
+    { value: 'singapore', label: 'Singapore' },
     // Add more countries as needed
 ];
 

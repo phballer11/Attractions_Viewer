@@ -122,7 +122,7 @@ export default function Admin() {
                 <br />
                 <br />
                 <br />
-                <a href="/">Home page</a>
+                <a href="https://phballer11.github.io/Attractions_Viewer/">Home page</a>
             </div>
         </main>
     );
