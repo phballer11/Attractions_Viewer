@@ -288,6 +288,17 @@ export default function Home() {
         return sortedArr1.every((value, index) => value === sortedArr2[index]);
     };
 
+    const getDateString = (dateString: string) => {
+        if (!dateString) {
+            return '';
+        }
+
+        const date = new Date(dateString);
+        const formattedDate = date.toLocaleDateString('en-NZ');
+        console.log(formattedDate);
+        return formattedDate;
+    };
+
     return (
         <main>
             {/* <button onClick={sendToFirebase}>Testing to firebase</button> */}
@@ -321,10 +332,13 @@ export default function Home() {
                             onChange={handleSelectChange}
                             placeholder="Filter by tags..."
                         />
-                        <div style={{ margin: '0 16px' }}>{data.length} results</div>
+                        <div style={{ margin: '0 16px', fontSize: '24px' }}>{data.length} results</div>
                         {data.map((result, index) => (
                             <div className="card" key={index} id={result.Id}>
-                                <h1>{result.Name}</h1>
+                                <div className="flex_row" style={{ justifyContent: 'space-between' }}>
+                                    <h1>{result.Name}</h1>
+                                    <span>Data collected at {result.CreatedAt.substring(0, 10)}</span>
+                                </div>
 
                                 <h2>
                                     <a style={{ textDecoration: 'none' }} href={result.GoogleLink} target="_blank">

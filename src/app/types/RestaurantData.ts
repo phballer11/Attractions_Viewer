@@ -19,4 +19,5 @@ export type RestaurantData = {
     Tags: string[];
     ChainRestaurantId: string | null;
     Success: boolean;
+    CreatedAt: string;
 };
