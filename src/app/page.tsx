@@ -27,6 +27,44 @@ export default function Home() {
 
     const [data, setData] = useState<RestaurantData[]>([]);
     const [ogData, setOgData] = useState<RestaurantData[]>([]);
+    const [currentPageData, setCurrentData] = useState<RestaurantData[]>([]);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+
+    const itemsPerPage = 20;
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(data.length / itemsPerPage);
+
+    // Get current items for the page
+    // const currentData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const goToNextPage = () => {
+        if (currentPage < totalPages) {
+            const newPage = currentPage + 1;
+            setCurrentPage(newPage);
+            setCurrentData(data.slice((newPage - 1) * itemsPerPage, newPage * itemsPerPage));
+        }
+    };
+
+    const goToPreviousPage = () => {
+        if (currentPage > 1) {
+            const newPage = currentPage - 1;
+            setCurrentPage(newPage);
+            setCurrentData(data.slice((newPage - 1) * itemsPerPage, newPage * itemsPerPage));
+        }
+    };
+
+    const jumpToPage = (page: number) => {
+        if (data.length === 0) {
+            setCurrentData([]);
+        }
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+            setCurrentData(data.slice((page - 1) * itemsPerPage, page * itemsPerPage));
+        }
+    };
+    useEffect(() => {
+        jumpToPage(1);
+    }, [data]);
 
     const [allFilters, setAllFilters] = useState<{ value: string; label: string }[]>([]);
     const [selectedFilters, setSelectedFilters] = useState<{ value: string; label: string }[]>([]);
@@ -237,9 +275,10 @@ export default function Home() {
     };
 
     // Handle removing a tag
-    const handleRemoveTag = (tag: string, restaurant: RestaurantData) => {
+    const handleRemoveTag = (tag: string) => {
         setTags((prevTags) => prevTags.filter((t) => t !== tag));
     };
+
     const handleKeyDown = (event: any) => {
         if (event.key === 'Enter') {
             event.preventDefault(); // Prevent the default Enter key behavior
@@ -288,20 +327,8 @@ export default function Home() {
         return sortedArr1.every((value, index) => value === sortedArr2[index]);
     };
 
-    const getDateString = (dateString: string) => {
-        if (!dateString) {
-            return '';
-        }
-
-        const date = new Date(dateString);
-        const formattedDate = date.toLocaleDateString('en-NZ');
-        console.log(formattedDate);
-        return formattedDate;
-    };
-
     return (
         <main>
-            {/* <button onClick={sendToFirebase}>Testing to firebase</button> */}
             <div className="container">
                 <div style={{ width: '50%' }}>
                     <Select
@@ -333,11 +360,11 @@ export default function Home() {
                             placeholder="Filter by tags..."
                         />
                         <div style={{ margin: '0 16px', fontSize: '24px' }}>{data.length} results</div>
-                        {data.map((result, index) => (
+                        {currentPageData.map((result, index) => (
                             <div className="card" key={index} id={result.Id}>
                                 <div className="flex_row" style={{ justifyContent: 'space-between' }}>
                                     <h1>{result.Name}</h1>
-                                    <span>Data collected at {result.CreatedAt.substring(0, 10)}</span>
+                                    <span>Data collected on {result.CreatedAt.substring(0, 10)}</span>
                                 </div>
 
                                 <h2>
@@ -376,7 +403,7 @@ export default function Home() {
                                                     {tag}
                                                     <button
                                                         className="removeButton"
-                                                        onClick={() => handleRemoveTag(tag, result)}
+                                                        onClick={() => handleRemoveTag(tag)}
                                                     >
                                                         &times; {/* "x" icon */}
                                                     </button>
