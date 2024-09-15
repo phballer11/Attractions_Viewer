@@ -10,7 +10,6 @@ import Select, { ActionMeta, MultiValue, SingleValue } from 'react-select';
 import { COUNTRY_OPTIONS, COUNTRY_SELECT_STYLES, TAGS_SELECT_STYLES } from './types/contants';
 import { checkIfCountrySupported } from './utils/utilService';
 import { collection, addDoc } from 'firebase/firestore';
-import { link } from 'fs';
 import { db } from './firebase.config';
 
 // TODO:
@@ -42,6 +41,10 @@ export default function Home() {
             const newPage = currentPage + 1;
             setCurrentPage(newPage);
             setCurrentData(data.slice((newPage - 1) * itemsPerPage, newPage * itemsPerPage));
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+            });
         }
     };
 
@@ -50,6 +53,10 @@ export default function Home() {
             const newPage = currentPage - 1;
             setCurrentPage(newPage);
             setCurrentData(data.slice((newPage - 1) * itemsPerPage, newPage * itemsPerPage));
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+            });
         }
     };
 
@@ -60,6 +67,10 @@ export default function Home() {
         if (page >= 1 && page <= totalPages) {
             setCurrentPage(page);
             setCurrentData(data.slice((page - 1) * itemsPerPage, page * itemsPerPage));
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+            });
         }
     };
     useEffect(() => {
@@ -360,6 +371,39 @@ export default function Home() {
                             placeholder="Filter by tags..."
                         />
                         <div style={{ margin: '0 16px', fontSize: '24px' }}>{data.length} results</div>
+                        <div style={{ margin: '16px', fontSize: '16px' }}>
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                                <button
+                                    style={{ width: '70px' }}
+                                    onClick={goToPreviousPage}
+                                    disabled={currentPage === 1}
+                                >
+                                    Previous
+                                </button>
+
+                                {Array.from({ length: totalPages }, (_, index) => (
+                                    <button
+                                        key={index + 1}
+                                        onClick={() => jumpToPage(index + 1)}
+                                        className={index + 1 === currentPage ? 'active page' : 'page'}
+                                    >
+                                        {index + 1}
+                                    </button>
+                                ))}
+
+                                <button
+                                    style={{ width: '70px' }}
+                                    onClick={goToNextPage}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    Next
+                                </button>
+                            </div>
+
+                            <p>
+                                Page {currentPage} of {totalPages}
+                            </p>
+                        </div>
                         {currentPageData.map((result, index) => (
                             <div className="card" key={index} id={result.Id}>
                                 <div className="flex_row" style={{ justifyContent: 'space-between' }}>
@@ -519,6 +563,39 @@ export default function Home() {
                                 )}
                             </div>
                         ))}
+                        <div style={{ margin: '16px', fontSize: '16px' }}>
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                                <button
+                                    style={{ width: '70px' }}
+                                    onClick={goToPreviousPage}
+                                    disabled={currentPage === 1}
+                                >
+                                    Previous
+                                </button>
+
+                                {Array.from({ length: totalPages }, (_, index) => (
+                                    <button
+                                        key={index + 1}
+                                        onClick={() => jumpToPage(index + 1)}
+                                        className={index + 1 === currentPage ? 'active page' : 'page'}
+                                    >
+                                        {index + 1}
+                                    </button>
+                                ))}
+
+                                <button
+                                    style={{ width: '70px' }}
+                                    onClick={goToNextPage}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    Next
+                                </button>
+                            </div>
+
+                            <p>
+                                Page {currentPage} of {totalPages}
+                            </p>
+                        </div>
                     </div>
                 ) : (
                     <p>No results yet.</p>

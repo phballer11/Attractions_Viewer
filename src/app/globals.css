@@ -400,3 +400,12 @@ html {
 .search-input:focus {
     border-color: #00bfff; /* Bright blue border on focus */
 }
+
+button.active {
+    font-weight: bold;
+    color: #339CFF;
+}
+
+button.page {
+width: 20px;
+}
