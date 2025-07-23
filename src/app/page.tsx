@@ -5,15 +5,12 @@ import { parseCSV } from './services/csvService';
 import { RestaurantData } from './types/RestaurantData';
 import LazyImage from './components/LazyImage';
 import Star from './components/Star';
-import ProgressBar from './components/ProgressBar/ProgressBar';
+import ThemeToggle from './components/ThemeToggle';
 import Select, { ActionMeta, MultiValue, SingleValue } from 'react-select';
 import { COUNTRY_OPTIONS, COUNTRY_SELECT_STYLES, TAGS_SELECT_STYLES } from './types/contants';
 import { checkIfCountrySupported } from './utils/utilService';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from './firebase.config';
-
-// TODO:
-// Add countries
 
 type CountPerRating = {
     value: string;
@@ -30,11 +27,7 @@ export default function Home() {
     const [currentPage, setCurrentPage] = useState<number>(1);
 
     const itemsPerPage = 20;
-    // Calculate the total number of pages
     const totalPages = Math.ceil(data.length / itemsPerPage);
-
-    // Get current items for the page
-    // const currentData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     const goToNextPage = () => {
         if (currentPage < totalPages) {
@@ -73,6 +66,7 @@ export default function Home() {
             });
         }
     };
+
     useEffect(() => {
         jumpToPage(1);
     }, [data]);
@@ -138,7 +132,6 @@ export default function Home() {
             return false;
         });
 
-        // extract out static rating tags
         const staticRatingTags = selectedFilters.filter(
             (filter) =>
                 filter === '0-1 star' ||
@@ -233,13 +226,6 @@ export default function Home() {
     };
 
     const formatCountPerRating = (countPerRating: string[]): CountPerRating[] => {
-        /*
-        5 stars, 294 reviews"
-        "4 stars, 125 reviews"
-        "3 stars, 44 reviews"
-        "2 stars, 21 reviews"
-        "1 stars, 60 reviews"
-        */
         try {
             const totalReviews = countPerRating.reduce((total, rating) => {
                 const reviews = parseInt(rating.split(/,(.+)/)[1].trim().replace(',', '').split(' ')[0]);
@@ -271,12 +257,10 @@ export default function Home() {
         return data.filter((d) => d.ChainRestaurantId === restaurant.ChainRestaurantId && d.Id !== restaurant.Id);
     };
 
-    // Handle input change
     const handleInputChange = (event: any) => {
         setInputValue(event.target.value);
     };
 
-    // Handle adding a tag
     const handleAddTag = (event: any) => {
         event.preventDefault();
         if (inputValue.trim() !== '') {
@@ -285,14 +269,13 @@ export default function Home() {
         }
     };
 
-    // Handle removing a tag
     const handleRemoveTag = (tag: string) => {
         setTags((prevTags) => prevTags.filter((t) => t !== tag));
     };
 
     const handleKeyDown = (event: any) => {
         if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent the default Enter key behavior
+            event.preventDefault();
             handleAddTag(event);
         }
     };
@@ -339,268 +322,333 @@ export default function Home() {
     };
 
     return (
-        <main>
-            <div className="container">
-                <div style={{ width: '50%' }}>
-                    <Select
-                        options={COUNTRY_OPTIONS}
-                        styles={COUNTRY_SELECT_STYLES}
-                        value={selectedCountry}
-                        onChange={handleCountryChange}
-                        id="country-select"
-                        placeholder="Select country"
-                    />
-                </div>
-                {data ? (
-                    <div>
-                        <div className="search-container">
-                            <input
-                                type="text"
-                                value={searchTerm}
-                                onChange={handleChange}
-                                placeholder="Search..."
-                                className="search-input"
-                            />
+        <>
+            <header className="app-header">
+                <div className="container">
+                    <div className="app-header-content">
+                        <h1 className="app-title">Attraction Viewer</h1>
+                        <div className="app-controls">
+                            <ThemeToggle />
                         </div>
+                    </div>
+                </div>
+            </header>
+            
+            <main>
+                <div className="container">
+                    <div className="search-container">
+                        <div className="search-header">
+                            <div className="country-select-wrapper">
+                                <Select
+                                    options={COUNTRY_OPTIONS}
+                                    styles={COUNTRY_SELECT_STYLES}
+                                    value={selectedCountry}
+                                    onChange={handleCountryChange}
+                                    id="country-select"
+                                    placeholder="Select country"
+                                    aria-label="Select country"
+                                />
+                            </div>
+                            <div className="search-input-wrapper">
+                                <input
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={handleChange}
+                                    placeholder="Search restaurants by name, address, or tag..."
+                                    className="input search-input"
+                                    aria-label="Search restaurants"
+                                />
+                            </div>
+                        </div>
+                        
                         <Select
                             isMulti
                             options={allFilters}
                             styles={TAGS_SELECT_STYLES}
                             id="tags-select"
                             onChange={handleSelectChange}
-                            placeholder="Filter by tags..."
+                            placeholder="Filter by tags and ratings..."
+                            aria-label="Filter by tags"
                         />
-                        <div style={{ margin: '0 16px', fontSize: '24px' }}>{data.length} results</div>
-                        <div style={{ margin: '16px', fontSize: '16px' }}>
-                            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                    </div>
+
+                    {data ? (
+                        <>
+                            <div className="results-info">
+                                <div className="results-count">
+                                    {data.length} {data.length === 1 ? 'restaurant' : 'restaurants'} found
+                                </div>
+                                <div className="results-pagination-info">
+                                    Page {currentPage} of {totalPages}
+                                </div>
+                            </div>
+                            
+                            <nav className="pagination" aria-label="Restaurant pagination">
                                 <button
-                                    style={{ width: '70px' }}
+                                    className="pagination-button"
                                     onClick={goToPreviousPage}
                                     disabled={currentPage === 1}
+                                    aria-label="Go to previous page"
                                 >
                                     Previous
                                 </button>
 
-                                {Array.from({ length: totalPages }, (_, index) => (
-                                    <button
-                                        key={index + 1}
-                                        onClick={() => jumpToPage(index + 1)}
-                                        className={index + 1 === currentPage ? 'active page' : 'page'}
-                                    >
-                                        {index + 1}
-                                    </button>
-                                ))}
+                                {Array.from({ length: Math.min(totalPages, 7) }, (_, index) => {
+                                    let pageNum;
+                                    if (totalPages <= 7) {
+                                        pageNum = index + 1;
+                                    } else if (currentPage <= 4) {
+                                        pageNum = index + 1;
+                                    } else if (currentPage >= totalPages - 3) {
+                                        pageNum = totalPages - 6 + index;
+                                    } else {
+                                        pageNum = currentPage - 3 + index;
+                                    }
+                                    
+                                    return (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => jumpToPage(pageNum)}
+                                            className={`pagination-button ${pageNum === currentPage ? 'active' : ''}`}
+                                            aria-label={`Go to page ${pageNum}`}
+                                            aria-current={pageNum === currentPage ? 'page' : undefined}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    );
+                                })}
 
                                 <button
-                                    style={{ width: '70px' }}
+                                    className="pagination-button"
                                     onClick={goToNextPage}
                                     disabled={currentPage === totalPages}
+                                    aria-label="Go to next page"
                                 >
                                     Next
                                 </button>
-                            </div>
+                            </nav>
 
-                            <p>
-                                Page {currentPage} of {totalPages}
-                            </p>
-                        </div>
-                        {currentPageData.map((result, index) => (
-                            <div className="card" key={index} id={result.Id}>
-                                <div className="flex_row" style={{ justifyContent: 'space-between' }}>
-                                    <h1>{result.Name}</h1>
-                                    <span>Data collected on {result.CreatedAt.substring(0, 10)}</span>
-                                </div>
+                            <div className="restaurant-grid">
+                                {currentPageData.map((result, index) => (
+                                    <article className="restaurant-card" key={index} id={result.Id}>
+                                        <div className="restaurant-header">
+                                            <h2 className="restaurant-title">{result.Name}</h2>
+                                            <time className="restaurant-date" dateTime={result.CreatedAt.substring(0, 10)}>
+                                                {new Date(result.CreatedAt).toLocaleDateString()}
+                                            </time>
+                                        </div>
 
-                                <h2>
-                                    <a style={{ textDecoration: 'none' }} href={result.GoogleLink} target="_blank">
-                                        {result.Address}
-                                    </a>
-                                </h2>
-                                {result.Website && (
-                                    <p style={{ marginTop: '8px' }}>
-                                        <b> Website:</b>{' '}
-                                        <a href={result.Website} target="_blank">
-                                            {result.Website}
-                                        </a>
-                                    </p>
-                                )}
-                                {result.Phone && (
-                                    <p style={{ marginTop: '8px' }}>
-                                        <b>Phone:</b> {result.Phone}
-                                    </p>
-                                )}
+                                        <div className="restaurant-address">
+                                            <a href={result.GoogleLink} target="_blank" rel="noopener noreferrer">
+                                                {result.Address}
+                                            </a>
+                                        </div>
 
-                                {editModeId !== result.Id && (
-                                    <div style={{ marginTop: '8px' }}>
-                                        {result.Tags.map((tag, index) => (
-                                            <div className="tag" key={index}>
-                                                {tag}
+                                        <div className="restaurant-details">
+                                            {result.Website && (
+                                                <div className="restaurant-info-item">
+                                                    <span className="restaurant-info-label">Website:</span>
+                                                    <span className="restaurant-info-value">
+                                                        <a href={result.Website} target="_blank" rel="noopener noreferrer">
+                                                            {result.Website}
+                                                        </a>
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {result.Phone && (
+                                                <div className="restaurant-info-item">
+                                                    <span className="restaurant-info-label">Phone:</span>
+                                                    <span className="restaurant-info-value">{result.Phone}</span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {editModeId !== result.Id && (
+                                            <div className="tags-container">
+                                                {result.Tags.map((tag, index) => (
+                                                    <span className="tag" key={index}>
+                                                        {tag}
+                                                    </span>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
-                                {(editModeId === result.Id) === true && (
-                                    <div>
-                                        <div className="tagsContainer">
-                                            {tags.map((tag, index) => (
-                                                <div key={index} className="tagItem">
-                                                    {tag}
-                                                    <button
-                                                        className="removeButton"
-                                                        onClick={() => handleRemoveTag(tag)}
-                                                    >
-                                                        &times; {/* "x" icon */}
+                                        )}
+
+                                        {editModeId === result.Id && (
+                                            <div className="edit-container">
+                                                <div className="tags-container">
+                                                    {tags.map((tag, index) => (
+                                                        <span key={index} className="tag tag-removable">
+                                                            {tag}
+                                                            <button
+                                                                className="tag-remove"
+                                                                onClick={() => handleRemoveTag(tag)}
+                                                                aria-label={`Remove ${tag} tag`}
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                                <div className="tag-input-container">
+                                                    <input
+                                                        type="text"
+                                                        className="input tag-input"
+                                                        value={inputValue}
+                                                        onKeyDown={handleKeyDown}
+                                                        onChange={handleInputChange}
+                                                        placeholder="Enter a tag"
+                                                        aria-label="Add new tag"
+                                                    />
+                                                    <button className="btn btn-secondary" onClick={handleAddTag}>
+                                                        Add Tag
                                                     </button>
                                                 </div>
-                                            ))}
-                                        </div>
-                                        <div className="flex_row" style={{ marginBottom: '24px' }}>
-                                            <input
-                                                type="text"
-                                                style={{
-                                                    fontSize: '18px',
-                                                    padding: '10px',
-                                                    width: '300px',
-                                                    height: '40px',
-                                                    borderRadius: '5px',
-                                                    border: '1px solid #ccc',
-                                                }}
-                                                value={inputValue}
-                                                onKeyDown={handleKeyDown}
-                                                onChange={handleInputChange}
-                                                placeholder="Enter a tag"
-                                            />
-                                            <button className="button btn-submit" onClick={handleAddTag}>
-                                                Add Tag
+                                                <button
+                                                    className="btn btn-primary"
+                                                    onClick={() => onTagChangeSubmit(result.Id)}
+                                                >
+                                                    Save Changes
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {isAdmin && (
+                                            <button
+                                                className={`btn ${editModeId === result.Id ? 'btn-secondary' : 'btn-ghost'}`}
+                                                onClick={() => handleEditModeClick(result.Id)}
+                                                style={{ marginTop: 'var(--space-lg)' }}
+                                            >
+                                                {editModeId === result.Id ? 'Cancel Edit' : 'Edit Tags'}
                                             </button>
-                                        </div>
-                                        <button
-                                            className="button btn-submit"
-                                            onClick={() => onTagChangeSubmit(result.Id)}
-                                        >
-                                            Save
-                                        </button>
-                                    </div>
-                                )}
-                                {isAdmin && (
-                                    <button
-                                        style={{ margin: '16px 0' }}
-                                        className="button"
-                                        onClick={() => handleEditModeClick(result.Id)}
-                                    >
-                                        {editModeId === result.Id ? 'Cancel' : 'Edit tags'}
-                                    </button>
-                                )}
-                                <div className="rating_hours_row ">
-                                    <div className="rating_section information-tile">
-                                        <div className="rating">
-                                            <div>{result.Rating.toString().replace('stars', '').trim()}</div>
-                                            <Star />
-                                            <span className="review-count">{result.RatingCount}</span>
-                                        </div>
-                                        {formatCountPerRating(result.CountPerRating) &&
-                                            formatCountPerRating(result.CountPerRating).map((rating, index) => (
-                                                <div key={index}>
-                                                    <div className="flex_row" style={{ marginTop: '6px' }}>
-                                                        <span style={{ width: '10px' }}>{rating.grade}</span>
-                                                        <ProgressBar progress={rating.value} />
-                                                        <span style={{ width: '30px' }}>
-                                                            ({rating.numberOfReviews})
-                                                        </span>
+                                        )}
+
+                                        <div className="rating-hours-container">
+                                            <div className="rating-section">
+                                                <div className="rating">
+                                                    <span>{result.Rating.toString().replace('stars', '').trim()}</span>
+                                                    <Star />
+                                                    <span className="rating-count">({result.RatingCount})</span>
+                                                </div>
+                                                {formatCountPerRating(result.CountPerRating) &&
+                                                    formatCountPerRating(result.CountPerRating).map((rating, index) => (
+                                                        <div key={index} className="rating-progress">
+                                                            <span className="rating-stars">{rating.grade}</span>
+                                                            <div className="rating-bar">
+                                                                <div 
+                                                                    className="rating-fill" 
+                                                                    style={{ width: `${rating.value}%` }}
+                                                                />
+                                                            </div>
+                                                            <span className="rating-count-small">({rating.numberOfReviews})</span>
+                                                        </div>
+                                                    ))}
+                                            </div>
+
+                                            {result.OpeningHours.length > 0 && (
+                                                <div className="hours-section">
+                                                    <h3>Opening Hours</h3>
+                                                    <div className="hours-list">
+                                                        {formatOpeningHours(result.OpeningHours).map((hour, index) => (
+                                                            <div key={index} className="hours-item">{hour}</div>
+                                                        ))}
                                                     </div>
                                                 </div>
-                                            ))}
-                                    </div>
-                                    {result.OpeningHours.length > 0 && (
-                                        <div className="hours_section information-tile">
-                                            <h2>Opening Hours:</h2>
-                                            <div>
-                                                {formatOpeningHours(result.OpeningHours).map((hour, index) => (
-                                                    <p key={index}>{hour}</p>
+                                            )}
+                                        </div>
+
+                                        <div className="info-tile">
+                                            <h3>AI Summary</h3>
+                                            <p>{result.AiReviewSummary}</p>
+                                        </div>
+
+                                        <div className="photo-gallery">
+                                            <div className="photo-grid">
+                                                {result.Images.map((img, index) => (
+                                                    <div key={index} className="photo-item">
+                                                        <LazyImage
+                                                            src={img}
+                                                            alt={`${result.Name} photo ${index + 1}`}
+                                                            placeholder="Loading..."
+                                                            retryLimit={5}
+                                                        />
+                                                    </div>
                                                 ))}
                                             </div>
                                         </div>
-                                    )}
-                                </div>
 
-                                <div className="information-tile" style={{ marginBottom: '24px' }}>
-                                    <h2>AI summary</h2>
-                                    <p>{result.AiReviewSummary}</p>
-                                </div>
-                                <div className="photo-gallery">
-                                    <div className="photos">
-                                        {result.Images.map((img, index) => (
-                                            <LazyImage
-                                                key={index}
-                                                src={img}
-                                                alt=""
-                                                placeholder="Loading..."
-                                                retryLimit={5}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                                {result.ChainRestaurantId && getChainRestaurants(result).length > 0 && (
-                                    <div className="information-tile">
-                                        <h2>Chain restaurants:</h2>
-                                        {getChainRestaurants(result).map((chainRestaurant, index) => (
-                                            <div key={index}>
-                                                <p style={{ fontWeight: 700, fontSize: '24px' }}>
-                                                    <a href={'#' + chainRestaurant.Id}>{chainRestaurant.Name}</a>
-                                                </p>
-
-                                                <p style={{ marginTop: '0' }}>
-                                                    <a
-                                                        style={{ textDecoration: 'none', color: 'white' }}
-                                                        href={chainRestaurant.GoogleLink}
-                                                    >
-                                                        {chainRestaurant.Address}
-                                                    </a>
-                                                </p>
+                                        {result.ChainRestaurantId && getChainRestaurants(result).length > 0 && (
+                                            <div className="chain-restaurants">
+                                                <h3>Other Locations</h3>
+                                                {getChainRestaurants(result).map((chainRestaurant, index) => (
+                                                    <div key={index} className="chain-restaurant-item">
+                                                        <div className="chain-restaurant-name">
+                                                            <a href={`#${chainRestaurant.Id}`}>{chainRestaurant.Name}</a>
+                                                        </div>
+                                                        <div className="chain-restaurant-address">
+                                                            <a href={chainRestaurant.GoogleLink} target="_blank" rel="noopener noreferrer">
+                                                                {chainRestaurant.Address}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
+                                        )}
+                                    </article>
+                                ))}
                             </div>
-                        ))}
-                        <div style={{ margin: '16px', fontSize: '16px' }}>
-                            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+
+                            <nav className="pagination" aria-label="Restaurant pagination">
                                 <button
-                                    style={{ width: '70px' }}
+                                    className="pagination-button"
                                     onClick={goToPreviousPage}
                                     disabled={currentPage === 1}
+                                    aria-label="Go to previous page"
                                 >
                                     Previous
                                 </button>
 
-                                {Array.from({ length: totalPages }, (_, index) => (
-                                    <button
-                                        key={index + 1}
-                                        onClick={() => jumpToPage(index + 1)}
-                                        className={index + 1 === currentPage ? 'active page' : 'page'}
-                                    >
-                                        {index + 1}
-                                    </button>
-                                ))}
+                                {Array.from({ length: Math.min(totalPages, 7) }, (_, index) => {
+                                    let pageNum;
+                                    if (totalPages <= 7) {
+                                        pageNum = index + 1;
+                                    } else if (currentPage <= 4) {
+                                        pageNum = index + 1;
+                                    } else if (currentPage >= totalPages - 3) {
+                                        pageNum = totalPages - 6 + index;
+                                    } else {
+                                        pageNum = currentPage - 3 + index;
+                                    }
+                                    
+                                    return (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => jumpToPage(pageNum)}
+                                            className={`pagination-button ${pageNum === currentPage ? 'active' : ''}`}
+                                            aria-label={`Go to page ${pageNum}`}
+                                            aria-current={pageNum === currentPage ? 'page' : undefined}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    );
+                                })}
 
                                 <button
-                                    style={{ width: '70px' }}
+                                    className="pagination-button"
                                     onClick={goToNextPage}
                                     disabled={currentPage === totalPages}
+                                    aria-label="Go to next page"
                                 >
                                     Next
                                 </button>
-                            </div>
-
-                            <p>
-                                Page {currentPage} of {totalPages}
-                            </p>
+                            </nav>
+                        </>
+                    ) : (
+                        <div className="results-info">
+                            <div className="results-count">Loading restaurants...</div>
                         </div>
-                    </div>
-                ) : (
-                    <p>No results yet.</p>
-                )}
-            </div>
-        </main>
+                    )}
+                </div>
+            </main>
+        </>
     );
 }
