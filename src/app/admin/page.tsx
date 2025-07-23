@@ -78,19 +78,23 @@ export default function Admin() {
                     </div>
                 </div>
             </header>
-            
+
             <main>
                 <div className="container">
                     <div className="admin-content">
                         <div className="admin-card">
                             <div className="card-header">
                                 <h2 className="card-title">Submit Search Request</h2>
-                                <p className="card-subtitle">Add new restaurants or attractions to the queue for processing</p>
+                                <p className="card-subtitle">
+                                    Add new restaurants or attractions to the queue for processing
+                                </p>
                             </div>
-                            
+
                             <form onSubmit={handleSubmit} className="admin-form">
                                 <div className="form-group">
-                                    <label htmlFor="country-select" className="form-label">Country *</label>
+                                    <label htmlFor="country-select" className="form-label">
+                                        Country *
+                                    </label>
                                     <div className="country-select-wrapper">
                                         <Select
                                             required={true}
@@ -104,9 +108,11 @@ export default function Admin() {
                                         />
                                     </div>
                                 </div>
-                                
+
                                 <div className="form-group">
-                                    <label htmlFor="searchString" className="form-label">Search Query</label>
+                                    <label htmlFor="searchString" className="form-label">
+                                        Search Query
+                                    </label>
                                     <input
                                         className="input"
                                         type="text"
@@ -116,11 +122,15 @@ export default function Admin() {
                                         placeholder="Enter search terms (e.g., 'sushi Tokyo')"
                                         aria-describedby="search-help"
                                     />
-                                    <p id="search-help" className="form-help">Use either search query or direct link, not both</p>
+                                    <p id="search-help" className="form-help">
+                                        Use either search query or direct link, not both
+                                    </p>
                                 </div>
-                                
+
                                 <div className="form-group">
-                                    <label htmlFor="link" className="form-label">Direct Link</label>
+                                    <label htmlFor="link" className="form-label">
+                                        Direct Link
+                                    </label>
                                     <input
                                         type="text"
                                         id="link"
@@ -130,11 +140,15 @@ export default function Admin() {
                                         placeholder="https://maps.google.com/..."
                                         aria-describedby="link-help"
                                     />
-                                    <p id="link-help" className="form-help">Direct Google Maps or business link</p>
+                                    <p id="link-help" className="form-help">
+                                        Direct Google Maps or business link
+                                    </p>
                                 </div>
-                                
+
                                 <div className="form-group">
-                                    <label htmlFor="tags" className="form-label">Tags</label>
+                                    <label htmlFor="tags" className="form-label">
+                                        Tags
+                                    </label>
                                     <input
                                         className="input"
                                         type="text"
@@ -144,9 +158,11 @@ export default function Admin() {
                                         placeholder="restaurant, sushi, japanese, tokyo"
                                         aria-describedby="tags-help"
                                     />
-                                    <p id="tags-help" className="form-help">Separate multiple tags with commas</p>
+                                    <p id="tags-help" className="form-help">
+                                        Separate multiple tags with commas
+                                    </p>
                                 </div>
-                                
+
                                 <div className="form-actions">
                                     <button type="submit" className="btn btn-primary btn-lg">
                                         Submit Request
@@ -154,7 +170,7 @@ export default function Admin() {
                                 </div>
                             </form>
                         </div>
-                        
+
                         <div className="admin-footer">
                             <a href="/" className="btn btn-ghost">
                                 ← Back to Home
@@ -164,6 +180,5 @@ export default function Admin() {
                 </div>
             </main>
         </>
-    );
     );
 }
