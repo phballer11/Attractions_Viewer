@@ -90,15 +90,39 @@ const LazyImage: React.FC<LazyImageProps> = ({ src, alt, placeholder, retryLimit
     }, [shouldLoad, hasStoppedScrolling, hasLoaded, error, retryCount, src, alt, retryLimit]);
 
     return (
-        <div ref={imageRef} style={{ minHeight: '200px' }}>
+        <div 
+            ref={imageRef} 
+            className="lazy-image-container"
+            style={{ 
+                minHeight: '200px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                backgroundColor: 'var(--color-surface-elevated)',
+                borderRadius: 'var(--radius-lg)',
+                overflow: 'hidden'
+            }}
+        >
             {hasLoaded ? (
                 <img
-                    style={{ width: '300px', height: '300px', marginRight: '10px', objectFit: 'cover' }}
                     src={src}
                     alt={alt}
+                    style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover',
+                        transition: 'var(--transition-normal)'
+                    }}
                 />
             ) : (
-                <Spinner />
+                <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    color: 'var(--color-text-tertiary)'
+                }}>
+                    <Spinner />
+                </div>
             )}
         </div>
     );
