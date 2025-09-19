@@ -337,9 +337,7 @@ export default function Home() {
                 <div className="container">
                     <div className="app-header-content">
                         <h1 className="app-title">Attraction Viewer</h1>
-                        <div className="app-controls">
-                            <ThemeToggle />
-                        </div>
+                        
                     </div>
                 </div>
             </header>
