@@ -91,6 +91,9 @@ export default function Home() {
             label: selectedOption.label,
         });
 
+        // Reset search and filters when changing country
+        setSearchTerm('');
+        setSelectedFilters([]);
         fetchData(selectedOption.value);
     };
 
@@ -106,7 +109,7 @@ export default function Home() {
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newSearchTerm = e.target.value.toLowerCase();
+        const newSearchTerm = e.target.value;
         setSearchTerm(newSearchTerm);
 
         search(
@@ -116,23 +119,30 @@ export default function Home() {
     };
 
     const search = (searchTerm: string, selectedFilters: string[]) => {
+        // Text search - if searchTerm is empty, include all restaurants
         let searchedData = ogData.filter((restaurant) => {
-            if (restaurant.Name.toLowerCase().includes(searchTerm)) {
+            if (!searchTerm.trim()) {
                 return true;
             }
 
-            if (restaurant.Address.toLowerCase().includes(searchTerm)) {
+            const searchLower = searchTerm.toLowerCase();
+
+            if (restaurant.Name?.toLowerCase().includes(searchLower)) {
                 return true;
             }
 
-            if (restaurant.Tags.some((tag) => tag.toLowerCase().includes(searchTerm))) {
+            if (restaurant.Address?.toLowerCase().includes(searchLower)) {
+                return true;
+            }
+
+            if (restaurant.Tags?.some((tag) => tag.toLowerCase().includes(searchLower))) {
                 return true;
             }
 
             return false;
         });
 
-        const staticRatingTags = selectedFilters.filter(
+        const staticRatingTags = selectedFilters?.filter(
             (filter) =>
                 filter === '0-1 star' ||
                 filter === '1-2 stars' ||
@@ -141,31 +151,24 @@ export default function Home() {
                 filter === '4 stars+'
         );
 
+        // Apply rating filters - use .some() to match ANY of the selected rating ranges
         if (staticRatingTags.length > 0) {
             const ratingFilter = staticRatingTags.map((tag) => {
                 if (tag === '0-1 star') {
-                    return (restaurant: RestaurantData) =>
-                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) < 1;
+                    return (restaurant: RestaurantData) => restaurant.Rating >= 0 && restaurant.Rating < 1;
                 } else if (tag === '1-2 stars') {
-                    return (restaurant: RestaurantData) =>
-                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) >= 1 &&
-                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) < 2;
+                    return (restaurant: RestaurantData) => restaurant.Rating >= 1 && restaurant.Rating < 2;
                 } else if (tag === '2-3 stars') {
-                    return (restaurant: RestaurantData) =>
-                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) >= 2 &&
-                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) < 3;
+                    return (restaurant: RestaurantData) => restaurant.Rating >= 2 && restaurant.Rating < 3;
                 } else if (tag === '3-4 stars') {
-                    return (restaurant: RestaurantData) =>
-                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) >= 3 &&
-                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) < 4;
+                    return (restaurant: RestaurantData) => restaurant.Rating >= 3 && restaurant.Rating < 4;
                 } else if (tag === '4 stars+') {
-                    return (restaurant: RestaurantData) =>
-                        parseFloat(restaurant.Rating.toString().replace('stars', '').trim()) >= 4;
+                    return (restaurant: RestaurantData) => restaurant.Rating >= 4;
                 }
                 return () => false;
             });
             searchedData = searchedData.filter((restaurant) => {
-                return ratingFilter.every((filter) => filter(restaurant));
+                return ratingFilter?.some((filter) => filter(restaurant));
             });
         }
 
@@ -178,11 +181,14 @@ export default function Home() {
                 filter !== '4 stars+'
         );
 
-        const filteredData = searchedData.filter((restaurant) => {
-            return filtersWithoutRating.every((filter) => restaurant.Tags.includes(filter));
-        });
+        // Apply tag filters - use .some() to match ANY of the selected tags
+        if (filtersWithoutRating.length > 0) {
+            searchedData = searchedData.filter((restaurant) => {
+                return filtersWithoutRating.some((filter) => restaurant.Tags?.includes(filter));
+            });
+        }
 
-        setData(filteredData);
+        setData(searchedData);
     };
 
     const fetchData = async (country: string) => {
@@ -210,7 +216,7 @@ export default function Home() {
     }, []);
 
     const formatOpeningHours = (openingHours: string[]) => {
-        if (openingHours.length === 0) {
+        if (!openingHours || !Array.isArray(openingHours) || openingHours.length === 0) {
             return [];
         }
         const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -226,6 +232,10 @@ export default function Home() {
     };
 
     const formatCountPerRating = (countPerRating: string[]): CountPerRating[] => {
+        if (!countPerRating || !Array.isArray(countPerRating) || countPerRating.length === 0) {
+            return [];
+        }
+
         try {
             const totalReviews = countPerRating.reduce((total, rating) => {
                 const reviews = parseInt(rating.split(/,(.+)/)[1].trim().replace(',', '').split(' ')[0]);
@@ -250,11 +260,11 @@ export default function Home() {
     };
 
     const getChainRestaurants = (restaurant: RestaurantData): RestaurantData[] => {
-        if (!restaurant.ChainRestaurantId) {
+        if (!restaurant?.ChainRestaurantId || !data || !Array.isArray(data)) {
             return [];
         }
 
-        return data.filter((d) => d.ChainRestaurantId === restaurant.ChainRestaurantId && d.Id !== restaurant.Id);
+        return data.filter((d) => d?.ChainRestaurantId === restaurant.ChainRestaurantId && d?.Id !== restaurant.Id);
     };
 
     const handleInputChange = (event: any) => {
@@ -333,7 +343,7 @@ export default function Home() {
                     </div>
                 </div>
             </header>
-            
+
             <main>
                 <div className="container">
                     <div className="search-container">
@@ -360,7 +370,7 @@ export default function Home() {
                                 />
                             </div>
                         </div>
-                        
+
                         <Select
                             isMulti
                             options={allFilters}
@@ -382,7 +392,7 @@ export default function Home() {
                                     Page {currentPage} of {totalPages}
                                 </div>
                             </div>
-                            
+
                             <nav className="pagination" aria-label="Restaurant pagination">
                                 <button
                                     className="pagination-button"
@@ -404,7 +414,7 @@ export default function Home() {
                                     } else {
                                         pageNum = currentPage - 3 + index;
                                     }
-                                    
+
                                     return (
                                         <button
                                             key={pageNum}
@@ -433,9 +443,14 @@ export default function Home() {
                                     <article className="restaurant-card" key={index} id={result.Id}>
                                         <div className="restaurant-header">
                                             <h2 className="restaurant-title">{result.Name}</h2>
-                                            <time className="restaurant-date" dateTime={result.CreatedAt.substring(0, 10)}>
-                                                {new Date(result.CreatedAt).toLocaleDateString()}
-                                            </time>
+                                            {result.CreatedAt && (
+                                                <time
+                                                    className="restaurant-date"
+                                                    dateTime={result.CreatedAt.substring(0, 10)}
+                                                >
+                                                    {new Date(result.CreatedAt).toLocaleDateString()}
+                                                </time>
+                                            )}
                                         </div>
 
                                         <div className="restaurant-address">
@@ -449,7 +464,11 @@ export default function Home() {
                                                 <div className="restaurant-info-item">
                                                     <span className="restaurant-info-label">Website:</span>
                                                     <span className="restaurant-info-value">
-                                                        <a href={result.Website} target="_blank" rel="noopener noreferrer">
+                                                        <a
+                                                            href={result.Website}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
                                                             {result.Website}
                                                         </a>
                                                     </span>
@@ -463,7 +482,7 @@ export default function Home() {
                                             )}
                                         </div>
 
-                                        {editModeId !== result.Id && (
+                                        {editModeId !== result.Id && result.Tags && (
                                             <div className="tags-container">
                                                 {result.Tags.map((tag, index) => (
                                                     <span className="tag" key={index}>
@@ -514,7 +533,9 @@ export default function Home() {
 
                                         {isAdmin && (
                                             <button
-                                                className={`btn ${editModeId === result.Id ? 'btn-secondary' : 'btn-ghost'}`}
+                                                className={`btn ${
+                                                    editModeId === result.Id ? 'btn-secondary' : 'btn-ghost'
+                                                }`}
                                                 onClick={() => handleEditModeClick(result.Id)}
                                                 style={{ marginTop: 'var(--space-lg)' }}
                                             >
@@ -529,27 +550,32 @@ export default function Home() {
                                                     <Star />
                                                     <span className="rating-count">({result.RatingCount})</span>
                                                 </div>
-                                                {formatCountPerRating(result.CountPerRating) &&
+                                                {result.CountPerRating &&
+                                                    formatCountPerRating(result.CountPerRating) &&
                                                     formatCountPerRating(result.CountPerRating).map((rating, index) => (
                                                         <div key={index} className="rating-progress">
                                                             <span className="rating-stars">{rating.grade}</span>
                                                             <div className="rating-bar">
-                                                                <div 
-                                                                    className="rating-fill" 
+                                                                <div
+                                                                    className="rating-fill"
                                                                     style={{ width: `${rating.value}%` }}
                                                                 />
                                                             </div>
-                                                            <span className="rating-count-small">({rating.numberOfReviews})</span>
+                                                            <span className="rating-count-small">
+                                                                ({rating.numberOfReviews})
+                                                            </span>
                                                         </div>
                                                     ))}
                                             </div>
 
-                                            {result.OpeningHours.length > 0 && (
+                                            {result.OpeningHours && result.OpeningHours.length > 0 && (
                                                 <div className="hours-section">
                                                     <h3>Opening Hours</h3>
                                                     <div className="hours-list">
                                                         {formatOpeningHours(result.OpeningHours).map((hour, index) => (
-                                                            <div key={index} className="hours-item">{hour}</div>
+                                                            <div key={index} className="hours-item">
+                                                                {hour}
+                                                            </div>
                                                         ))}
                                                     </div>
                                                 </div>
@@ -561,38 +587,48 @@ export default function Home() {
                                             <p>{result.AiReviewSummary}</p>
                                         </div>
 
-                                        <div className="photo-gallery">
-                                            <div className="photo-grid">
-                                                {result.Images.map((img, index) => (
-                                                    <div key={index} className="photo-item">
-                                                        <LazyImage
-                                                            src={img}
-                                                            alt={`${result.Name} photo ${index + 1}`}
-                                                            placeholder="Loading..."
-                                                            retryLimit={5}
-                                                        />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {result.ChainRestaurantId && getChainRestaurants(result).length > 0 && (
-                                            <div className="chain-restaurants">
-                                                <h3>Other Locations</h3>
-                                                {getChainRestaurants(result).map((chainRestaurant, index) => (
-                                                    <div key={index} className="chain-restaurant-item">
-                                                        <div className="chain-restaurant-name">
-                                                            <a href={`#${chainRestaurant.Id}`}>{chainRestaurant.Name}</a>
+                                        {result.Images && result.Images.length > 0 && (
+                                            <div className="photo-gallery">
+                                                <div className="photo-grid">
+                                                    {result.Images.map((img, index) => (
+                                                        <div key={index} className="photo-item">
+                                                            <LazyImage
+                                                                src={img}
+                                                                alt={`${result.Name} photo ${index + 1}`}
+                                                                placeholder="Loading..."
+                                                                retryLimit={5}
+                                                            />
                                                         </div>
-                                                        <div className="chain-restaurant-address">
-                                                            <a href={chainRestaurant.GoogleLink} target="_blank" rel="noopener noreferrer">
-                                                                {chainRestaurant.Address}
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                    ))}
+                                                </div>
                                             </div>
                                         )}
+
+                                        {result.ChainRestaurantId &&
+                                            getChainRestaurants(result) &&
+                                            getChainRestaurants(result).length > 0 && (
+                                                <div className="chain-restaurants">
+                                                    <h3>Other Locations</h3>
+                                                    {getChainRestaurants(result).map((chainRestaurant, index) => (
+                                                        <div key={index} className="chain-restaurant-item">
+                                                            <div className="chain-restaurant-name">
+                                                                <a href={`#${chainRestaurant.Id}`}>
+                                                                    {chainRestaurant.Name}
+                                                                </a>
+                                                            </div>
+                                                            <div className="chain-restaurant-address">
+                                                                <a
+                                                                    href={chainRestaurant.GoogleLink}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                >
+                                                                    {chainRestaurant.Address}
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                     </article>
                                 ))}
                             </div>
@@ -618,7 +654,7 @@ export default function Home() {
                                     } else {
                                         pageNum = currentPage - 3 + index;
                                     }
-                                    
+
                                     return (
                                         <button
                                             key={pageNum}
